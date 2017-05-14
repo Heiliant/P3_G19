@@ -150,6 +150,7 @@
     <ClCompile Include="Renderer.cc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Entios.h" />
     <ClInclude Include="Input.inl.hh" />
     <ClInclude Include="Renderer.hh" />
   </ItemGroup>

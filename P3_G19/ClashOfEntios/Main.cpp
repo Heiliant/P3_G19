@@ -5,68 +5,40 @@
 #include "Input.inl.hh"
 #include "Renderer.hh"
 #include <vector>
-
+#include <stack>
+#include <algorithm>
+const int SizeJ = 74;
+const int SizeI = 36;
+enum class direction
+{
+	_Up, _Down, _Left, _Right
+};
+#include "Entios.h"
 
 #define ARRIBA enti::InputKey::w //este y todos los demas estaban asi w,W y abajo en la funcion MovimientoPlayer me daba error
-#define ABAJO enti::InputKey::s
+#define ABAJO enti::InputKey::s // nos faltará meter las letras en mayus. El define no creo que le guste mucho a la tona, ya que es de c xD.
 #define DERECHA enti::InputKey::d
 #define IZQUIERDA enti::InputKey::a
 #define ATACAR enti::InputKey::SPACEBAR
 #define REHACER enti::InputKey::z
-#define CAMBIAR_ENTIO enti::InputKey::ENTER
+#define REREHACER enti::InputKey::x
+#define CAMBIAR enti::InputKey::ENTER
 #define ATRAS enti::InputKey::ESC
 
-const int SizeI = 36;
-const int SizeJ = 74;
-const int DosArmas = 2;
+//const int DosArmas = 2;
 
 
 enti::InputKey tecla;
-std::vector<MonigotesJuego> Equipo1; //undeclared 
-std::vector<MonigotesJuego> Equipo2;
-
 enum class Arma{SWORD,BOW};
 
+/*
 void Muerte(std::vector <MonigotesJuego> Equipo1, std::vector <MonigotesJuego> Equipo2); //forward declaration
 void Ataque(int armusa, int &iterador, char &mapa, bool &controlador, int &ContadorAcciones, std::vector <MonigotesJuego> Equipo1, std::vector <MonigotesJuego> Equipo2); //forward declaration
+*/
 
-class MonigotesJuego
-{
-public:
-
-	int vida;                             //todos los atributos que tendran los monigotes que se mueven en el juego
-	Arma Weapon[DosArmas];  //diria que nos podemos ahorrar esto, ya que los jugadores siempre llevarán sus armas y no pueden perderlas/ cambiarlas
-	int Flechas;
-	int Damage;				//creo que nos lo podemos ahorrar ya que el damage depende del tipo de ataque, no del PJ
-	char SimboloMonigote;
-	int CoordenadasX;
-	int CoordenadasY;
-	bool dead;				//si tenemos la vida nos podemos ahorrar esto, aunque está bien tenerlo para hacer las cosas más legibles
-	bool esControlado;		
-	char TerrenoAnterior; //tomara el valor del char que corresponde al terreno donde esta el jugador, para cuando este se mueva vuelva a pintar el char del terreno donde estaba
-							//diria que es más conveniente que sea el mapa quien actualiza lo que se dibuja en cada hueco del mismo. De modo que el mapa
-							//sepa donde están los players y pinte el contenido del array y "encima" de esta, el simbolo de los PJ.
-
-	MonigotesJuego() //constructor de los monigotes
-	{
-		vida = 10;
-		Weapon[0] = Arma::SWORD;  Weapon[1]= Arma::BOW; //
-		dead = false; 
-		esControlado = false;
-		Equipo1.front().esControlado = true; //todos seran false menos el primero del equipo 1 que sera true, sera el primero qeu empezara a controlarse
-											//esto se llama al instanciar cada monigote, así que mejor lo hacemos al instanciar el mapa o en el main.
-		Flechas = 10;
-	}
-
-	~MonigotesJuego() {};
-
-	void SeleccionarEntio()
-	{
-
-	}
-
+/*
 	void ComandoPlayer(char &mapa) //funcion sobre lo que puede hacer el player y como segun esta el mapa variará lo pasamos por referencia
-	{
+	{								//esto no funcionará bien porque debe llamarse dentro del gameloop, y en cada iteración reseteamos todas estas variables
 		bool ControlTurnos = false;
 		int ContadorAcciones = 10;
 		int iterador = 0;
@@ -155,71 +127,199 @@ public:
 
 
 	}
+	*/
 
-};
+//Los setters son mejores que tener X e Y publicos porque así nos aseguramos de que el PJ no pueda salir del mapa
 
-class Map
-{
-public:
+MonigotesJuego::MonigotesJuego(GameManager &boss) : manager(boss) {
+	vida = 10;
+	flechas = 10;
+	dead = false;
+	esControlado = false;
+	fatiga = 0;
+}
 
-	char mapa[SizeJ][SizeI];
+//Con los setters nos aseguramos de que no se sale del mapa. Después en el gameManager haremos que no puedas meterte en la posición de otro entio.
+void MonigotesJuego::plusX() {
+	if (CoordenadasX < SizeJ - 1)
+		CoordenadasX++;
+}
 
-	Map(std::vector<MonigotesJuego> &Team1, std::vector<MonigotesJuego> &Team2) //no se si el recurso se tiene que leer como archivo asi que dejo esto asi por si al final se hace asi leerlo caracter a caracter
+void MonigotesJuego::plusY() {
+	if (CoordenadasY < SizeI - 1)
+		CoordenadasY--;
+}
+
+void MonigotesJuego::minusX() {
+	if (CoordenadasX > 0)
+		CoordenadasX--;
+}
+
+void MonigotesJuego::minusY() {
+	if (CoordenadasY > 0)
+		CoordenadasY--;
+}
+
+void MonigotesJuego::setX(int a) {
+	if (a >= 0 && a < SizeJ)
+		CoordenadasX = a;
+}
+
+void MonigotesJuego::setY(int a) {
+	if (a >= 0 && a < SizeI)
+		CoordenadasY = a;
+}
+
+void MonigotesJuego::ComandoPJ(enti::InputKey pulsado, char* mapa) {
+
+		if (!manager.ActiveTeamIsDone()) { //si el equipo que está jugando aún tiene acciones
+			switch (pulsado) {
+			case CAMBIAR: CambiarEntio();
+				break;
+			case ARRIBA: manager.submitMove(direction::_Up);
+				break;
+			case ABAJO: manager.submitMove(direction::_Down);
+				break;
+			case DERECHA: manager.submitMove(direction::_Right);
+				break;
+			case IZQUIERDA: manager.submitMove(direction::_Left);
+				break;
+			case REHACER:
+				break;
+			case REREHACER:
+				break;
+			case ATRAS:
+				break;
+			case ATACAR:
+				break;
+			}
+		}
+		else{
+
+		}
+	}
+
+void MonigotesJuego::CambiarEntio() //recorre el team activo. Setea el esControlado 
+	{															//de todos los muñecos a falso y busca al menos fatigado y lo pone en true
+		int ansposition=0;
+		int minimalStress = manager.ActiveTeam().at(0).fatiga;
+
+		for (unsigned int i = 1; i < manager.ActiveTeam().size(); ++i) {
+			if (manager.ActiveTeam().at(i).fatiga < minimalStress) {
+				ansposition = i;
+				minimalStress = manager.ActiveTeam().at(i).fatiga;
+				manager.ActiveTeam().at(i).esControlado = false;
+			}
+		}
+
+		manager.ActiveTeam().at(ansposition).esControlado = true;;
+	}
+
+
+Map::Map(std::vector<MonigotesJuego> &Team1, std::vector<MonigotesJuego> &Team2) //no se si el recurso se tiene que leer como archivo asi que dejo esto asi por si al final se hace asi leerlo caracter a caracter
 	{
 		std::ifstream mapOverlay("default.cfg");
 		char linia[SizeJ];
 
 		for (int i = 0; mapOverlay.getline(linia, SizeJ); ++i) { //lee el archivo default.cfg y lo guarda bien ordenadito en el array mapa.
-			for (int j = 0; j < SizeJ; ++j) {					//si se encuentra con los players (1, 2, 3, 4, 5, a, b, c, d, e o f), escribe '.' en el mapa
-				switch (linia[i]) {								//y les asigna la posición en la que nos los hemos encontrado.
-				case 'A': Team1.at(0).CoordenadasX, Team1.at(0).CoordenadasY = i, j;
+			for (int j = 0; j < SizeJ; ++j) {
+				//si se encuentra con los players (1, 2, 3, 4, 5, a, b, c, d, e o f), escribe '.' en el mapa
+				switch (linia[j]) {								//y les asigna la posición en la que nos los hemos encontrado.
+				case 'A': Team1.at(0).setX(i); Team1.at(0).setY(j);
 					mapa[i][j] = '.';
 					break;
-				case 'B':Team1.at(1).CoordenadasX, Team1.at(1).CoordenadasY = i, j;
+				case 'B':Team1.at(1).setX(i);  Team1.at(1).setY(j);
 					mapa[i][j] = '.';
 					break;
-				case 'C':Team1.at(2).CoordenadasX, Team1.at(2).CoordenadasY = i, j;
+				case 'C':Team1.at(2).setX(i); Team1.at(2).setY(j);
 					mapa[i][j] = '.';
 					break;
-				case 'D':Team1.at(3).CoordenadasX, Team1.at(3).CoordenadasY = i, j;
+				case 'D':Team1.at(3).setX(i); Team1.at(3).setY(j);
 					mapa[i][j] = '.';
 					break;
-				case 'E':Team1.at(4).CoordenadasX, Team1.at(4).CoordenadasY = i, j;
+				case 'E':Team1.at(4).setX(i); Team1.at(4).setY(j);
 					mapa[i][j] = '.';
 					break;
-				case 'F':Team1.at(5).CoordenadasX, Team1.at(5).CoordenadasY = i, j;
+				case 'F':Team1.at(5).setX(i); Team1.at(5).setY(j);
 					mapa[i][j] = '.';
 					break;
-				case '1':Team2.at(0).CoordenadasX, Team2.at(0).CoordenadasY = i, j;
+				case '1':Team2.at(0).setX(i); Team2.at(0).setY(j);
 					mapa[i][j] = '.';
 					break;
-				case '2':Team2.at(1).CoordenadasX, Team2.at(1).CoordenadasY = i, j;
+				case '2':Team2.at(1).setX(i); Team2.at(1).setY(j);
 					mapa[i][j] = '.';
 					break;
-				case '3':Team2.at(2).CoordenadasX, Team2.at(2).CoordenadasY = i, j;
+				case '3':Team2.at(2).setX(i); Team2.at(2).setY(j);
 					mapa[i][j] = '.';
 					break;
-				case '4':Team2.at(3).CoordenadasX, Team2.at(3).CoordenadasY = i, j;
+				case '4':Team2.at(3).setX(i); Team2.at(3).setY(j);
 					mapa[i][j] = '.';
 					break;
-				case '5':Team2.at(4).CoordenadasX, Team2.at(4).CoordenadasY = i, j;
+				case '5':Team2.at(4).setX(i); Team2.at(4).setY(j);
 					mapa[i][j] = '.';
 					break;
-				case '6':Team2.at(5).CoordenadasX, Team2.at(5).CoordenadasY = i, j;
+				case '6':Team2.at(5).setX(i); Team2.at(5).setY(j);
 					mapa[i][j] = '.';
 					break;
 				default:
 					mapa[i][j] = linia[j];
-					std::cout << linia[j];
 					break;
 				}
+				std::cout << mapa[i][j];
 			}
 			std::cout << std::endl;
 		}
 
 	}
 
-};
+
+std::vector<MonigotesJuego> GameManager::ActiveTeam() {
+		if (Team1active) return Equipo1;
+		else return Equipo2;
+	}
+
+bool GameManager::ActiveTeamIsDone() {
+		return actions > 0;
+	}
+
+void GameManager::Equipo1SetState(bool a) {
+
+	}
+
+void GameManager::Equipo2SetState(bool a) {
+
+	}
+
+void GameManager::submitMove(direction vector) {
+		for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
+			if (ActiveTeam().at(i).esControlado) {
+				switch (vector) {
+				case direction::_Down: ActiveTeam().at(i).minusY();
+					break;
+				case direction::_Left: ActiveTeam().at(i).minusX();
+					break;
+				case direction::_Right: ActiveTeam().at(i).plusX();
+					break;
+				case direction::_Up: ActiveTeam().at(i).plusY();
+					break;
+				}
+			}
+		}
+	}
+
+GameManager::GameManager() {
+	for (int i = 0; i < 6; ++i) {
+		Equipo1.push_back(*this);
+	}
+	for (int i = 0; i < 6; ++i) {
+		Equipo2.push_back(*this);
+	}
+	Map* mapa = new Map(Equipo1, Equipo2);
+	Team1active = false;
+	Team2active = false;
+	actions = 10;
+	}
+
 /*
 void Ataque(int armusa, int &iterador, char &mapa, bool &controlador, int &ContadorAcciones, std::vector <MonigotesJuego> Equipo1, std::vector <MonigotesJuego> Equipo2)
 {
@@ -383,6 +483,6 @@ void Ataque(int armusa, int &iterador, char &mapa, bool &controlador, int &Conta
 
 void main()
 {
-	Map* mapa = new Map();
+	GameManager* boss = new GameManager();
 	int x = 0;
 }
