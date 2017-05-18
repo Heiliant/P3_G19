@@ -170,7 +170,7 @@ void MonigotesJuego::setY(int a) {
 		CoordenadasY = a;
 }
 
-void MonigotesJuego::ComandoPJ(enti::InputKey pulsado, char* mapa) {
+void MonigotesJuego::ComandoPJ(enti::InputKey pulsado, char mapa[][36]) {
 
 		if (!manager.ActiveTeamIsDone()) { //si el equipo que está jugando aún tiene acciones
 			switch (pulsado) {
@@ -274,8 +274,8 @@ Map::Map(std::vector<MonigotesJuego> &Team1, std::vector<MonigotesJuego> &Team2)
 
 
 std::vector<MonigotesJuego> GameManager::ActiveTeam() {
-		if (Team1active) return Equipo1;
-		else return Equipo2;
+		if (Team1active) return EquipoRef1;
+		else return EquipoRef2;
 	}
 
 bool GameManager::ActiveTeamIsDone() {
@@ -291,33 +291,40 @@ void GameManager::Equipo2SetState(bool a) {
 	}
 
 void GameManager::submitMove(direction vector) {
-		for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
-			if (ActiveTeam().at(i).esControlado) {
-				switch (vector) {
-				case direction::_Down: ActiveTeam().at(i).minusY();
-					break;
-				case direction::_Left: ActiveTeam().at(i).minusX();
-					break;
-				case direction::_Right: ActiveTeam().at(i).plusX();
-					break;
-				case direction::_Up: ActiveTeam().at(i).plusY();
-					break;
-				}
-			}
-		}
+	int localPos;
+	for (localPos = 0; localPos < ActiveTeam().size(); ++localPos) {
+		if (ActiveTeam().at(localPos).esControlado)
+			break;
 	}
 
-GameManager::GameManager() {
+	if (localPos != ActiveTeam().size()+1) {
+			switch (vector) {
+			case direction::_Down: ActiveTeam().at(localPos).minusY();
+				break;
+			case direction::_Left: ActiveTeam().at(localPos).minusX();
+				break;
+			case direction::_Right: ActiveTeam().at(localPos).plusX();
+				break;
+			case direction::_Up: ActiveTeam().at(localPos).plusY();
+				break;
+			}
+		}	
+	}
+
+GameManager::GameManager(std::vector<MonigotesJuego> &Equipo1, std::vector<MonigotesJuego> &Equipo2) : EquipoRef1(Equipo1), EquipoRef2(Equipo2) {
+
 	for (int i = 0; i < 6; ++i) {
-		Equipo1.push_back(*this); //igual debería ser Equipo1.push_back(*MonigoteJuego=new MonigoteJuego(*this));
+		Equipo1.push_back(MonigotesJuego(*this));
 	}
 	for (int i = 0; i < 6; ++i) {
-		Equipo2.push_back(*this);
+		Equipo2.push_back(MonigotesJuego(*this));
 	}
+	Equipo1.at(0).esControlado = true;
 	Map* mapa = new Map(Equipo1, Equipo2);
-	Team1active = false;
+	Team1active = true;
 	Team2active = false;
 	actions = 10;
+;
 	}
 
 /*
@@ -483,6 +490,16 @@ void Ataque(int armusa, int &iterador, char &mapa, bool &controlador, int &Conta
 
 void main()
 {
-	GameManager* boss = new GameManager();
-	int x = 0;
+	std::vector<MonigotesJuego> Equipo1;
+	std::vector<MonigotesJuego> Equipo2;
+	GameManager boss(Equipo1, Equipo2);
+	Map mapusa(Equipo1, Equipo2);
+	int i;
+	do {
+		for (i = 0; i < boss.ActiveTeam().size(); ++i) {
+			if (boss.ActiveTeam().at(i).esControlado)
+				break;
+		}
+		boss.ActiveTeam().at(i).ComandoPJ(enti::getInputKey(), mapusa.mapa);
+	} while (!false);
 }

@@ -5,20 +5,20 @@ class MonigotesJuego;
 class GameManager { //el gamemanager controlará, básicamente, todo. A quien le toca jugar, donde está cada entio, 
 					//cuando alguien puede moverse, las acciones restantes
 private:
-	std::vector<MonigotesJuego> Equipo1;
-	std::vector<MonigotesJuego> Equipo2;
+	std::vector<MonigotesJuego> &EquipoRef1;
+	std::vector<MonigotesJuego> &EquipoRef2;
 	bool Team1active;
 	bool Team2active;
 	int actions;
 
 public:
-	std::stack<GameManager> historial;
+	//std::stack<GameManager> historial;  Da un error, dice que no se ha defiido aún el tipo GameManager.
 	std::vector<MonigotesJuego> ActiveTeam();
 	bool ActiveTeamIsDone();
 	void Equipo1SetState(bool a);
 	void Equipo2SetState(bool a);
 	void submitMove(direction vector);
-	GameManager();
+	GameManager(std::vector<MonigotesJuego> &Equipo1, std::vector<MonigotesJuego> &Equipo2);
 };
 
 class MonigotesJuego {
@@ -43,7 +43,7 @@ public:
 
 	MonigotesJuego(GameManager &boss);//constructor de los monigotes
 
-	void ComandoPJ(enti::InputKey pulsado, char* mapa);
+	void ComandoPJ(enti::InputKey pulsado, char mapa[][36]);
 	void CambiarEntio();
 
 	void plusX();
