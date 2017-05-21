@@ -225,49 +225,47 @@ Map::Map(std::vector<MonigotesJuego> &Team1, std::vector<MonigotesJuego> &Team2)
 			for (int j = 0; j < SizeJ; ++j) {
 				//si se encuentra con los players (1, 2, 3, 4, 5, a, b, c, d, e o f), escribe '.' en el mapa
 				switch (linia[j]) {								//y les asigna la posición en la que nos los hemos encontrado.
-				case 'A': Team1.at(0).setX(i); Team1.at(0).setY(j);
+				case 'A': Team1.at(0).setX(j); Team1.at(0).setY(i); Team1.at(0).SimboloMonigote = linia[j];
 					mapa[i][j] = '.';
 					break;
-				case 'B':Team1.at(1).setX(i);  Team1.at(1).setY(j);
+				case 'B':Team1.at(1).setX(j);  Team1.at(1).setY(i); Team1.at(1).SimboloMonigote = linia[j];
 					mapa[i][j] = '.';
 					break;
-				case 'C':Team1.at(2).setX(i); Team1.at(2).setY(j);
+				case 'C':Team1.at(2).setX(j); Team1.at(2).setY(i); Team1.at(2).SimboloMonigote = linia[j];
 					mapa[i][j] = '.';
 					break;
-				case 'D':Team1.at(3).setX(i); Team1.at(3).setY(j);
+				case 'D':Team1.at(3).setX(j); Team1.at(3).setY(i); Team1.at(3).SimboloMonigote = linia[j];
 					mapa[i][j] = '.';
 					break;
-				case 'E':Team1.at(4).setX(i); Team1.at(4).setY(j);
+				case 'E':Team1.at(4).setX(j); Team1.at(4).setY(i); Team1.at(4).SimboloMonigote = linia[j];
 					mapa[i][j] = '.';
 					break;
-				case 'F':Team1.at(5).setX(i); Team1.at(5).setY(j);
+				case 'F':Team1.at(5).setX(j); Team1.at(5).setY(i); Team1.at(5).SimboloMonigote = linia[j];
 					mapa[i][j] = '.';
 					break;
-				case '1':Team2.at(0).setX(i); Team2.at(0).setY(j);
+				case '1':Team2.at(0).setX(j); Team2.at(0).setY(i); Team2.at(0).SimboloMonigote = linia[j];
 					mapa[i][j] = '.';
 					break;
-				case '2':Team2.at(1).setX(i); Team2.at(1).setY(j);
+				case '2':Team2.at(1).setX(j); Team2.at(1).setY(i); Team2.at(1).SimboloMonigote = linia[j];
 					mapa[i][j] = '.';
 					break;
-				case '3':Team2.at(2).setX(i); Team2.at(2).setY(j);
+				case '3':Team2.at(2).setX(j); Team2.at(2).setY(i); Team2.at(2).SimboloMonigote = linia[j];
 					mapa[i][j] = '.';
 					break;
-				case '4':Team2.at(3).setX(i); Team2.at(3).setY(j);
+				case '4':Team2.at(3).setX(j); Team2.at(3).setY(i); Team2.at(3).SimboloMonigote = linia[j];
 					mapa[i][j] = '.';
 					break;
-				case '5':Team2.at(4).setX(i); Team2.at(4).setY(j);
+				case '5':Team2.at(4).setX(j); Team2.at(4).setY(i); Team2.at(4).SimboloMonigote = linia[j];
 					mapa[i][j] = '.';
 					break;
-				case '6':Team2.at(5).setX(i); Team2.at(5).setY(j);
+				case '6':Team2.at(5).setX(j); Team2.at(5).setY(i); Team2.at(5).SimboloMonigote = linia[j];
 					mapa[i][j] = '.';
 					break;
 				default:
 					mapa[i][j] = linia[j];
 					break;
 				}
-				std::cout << mapa[i][j];
 			}
-			std::cout << std::endl;
 		}
 
 	}
@@ -315,6 +313,13 @@ GameManager::GameManager() {
 		Equipo2.push_back(*this);
 	}
 	Map* mapa = new Map(Equipo1, Equipo2);
+	layOut = mapa->mapa;
+	for (int i = 0; i < Equipo1.size(); ++i) {
+		layOut[Equipo1.at(i).getY()][Equipo1.at(i).getX()] = Equipo1.at(i).SimboloMonigote;
+	}
+	for (int i = 0; i < Equipo2.size(); ++i) {
+		layOut[Equipo2.at(i).getY()][Equipo2.at(i).getX()] = Equipo2.at(i).SimboloMonigote;
+	}
 	Team1active = false;
 	Team2active = false;
 	actions = 10;
@@ -481,8 +486,27 @@ void Ataque(int armusa, int &iterador, char &mapa, bool &controlador, int &Conta
 */
 
 
-void main()
-{
+void Play() {
+
 	GameManager* boss = new GameManager();
 	int x = 0;
+
+	//do {
+
+		for (int i = 0; i < SizeI; ++i) {
+			for (int j = 0; j < SizeJ; ++j) {
+				
+				std::cout << boss->layOut[i][j]; //Primer [] corresponde a las Y, el segundo [] a las X.
+			}
+			std::cout << std::endl;
+		}
+		int i = 10;
+	//} while (true);
+	
+}
+
+
+void main()
+{
+	Play();
 }

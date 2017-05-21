@@ -12,7 +12,8 @@ private:
 	int actions;
 
 public:
-	std::stack<GameManager> historial;
+	//std::stack<GameManager> historial;
+	char(*layOut)[SizeJ];
 	std::vector<MonigotesJuego> ActiveTeam();
 	bool ActiveTeamIsDone();
 	void Equipo1SetState(bool a);
@@ -52,6 +53,12 @@ public:
 	void minusY();
 	void setX(int a);
 	void setY(int a);
+	int getX() {
+		return CoordenadasX;
+	}
+	int getY() {
+		return CoordenadasY;
+	}
 };
 
 
@@ -61,6 +68,6 @@ public:
 class Map {
 public:
 
-	char mapa[SizeJ][SizeI];
+	char mapa[SizeI][SizeJ];
 	Map(std::vector<MonigotesJuego> &Team1, std::vector<MonigotesJuego> &Team2);
 };
