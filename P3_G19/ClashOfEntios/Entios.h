@@ -19,6 +19,8 @@ public:
 	void Equipo1SetState(bool a);
 	void Equipo2SetState(bool a);
 	void submitMove(direction vector);
+	void ComandoPJ(enti::InputKey pulsado);
+	void CambiarEntio();
 	GameManager();
 };
 
@@ -44,8 +46,8 @@ public:
 
 	MonigotesJuego(GameManager &boss);//constructor de los monigotes
 
-	void ComandoPJ(enti::InputKey pulsado, char* mapa);
-	void CambiarEntio();
+	
+
 
 	void plusX();
 	void minusX();
@@ -53,12 +55,8 @@ public:
 	void minusY();
 	void setX(int a);
 	void setY(int a);
-	int getX() {
-		return CoordenadasX;
-	}
-	int getY() {
-		return CoordenadasY;
-	}
+	int getX();
+	int getY();
 };
 
 

@@ -142,22 +142,22 @@ MonigotesJuego::MonigotesJuego(GameManager &boss) : manager(boss) {
 //Con los setters nos aseguramos de que no se sale del mapa. Después en el gameManager haremos que no puedas meterte en la posición de otro entio.
 void MonigotesJuego::plusX() {
 	if (CoordenadasX < SizeJ - 1)
-		CoordenadasX++;
+		++CoordenadasX;
 }
 
 void MonigotesJuego::plusY() {
 	if (CoordenadasY < SizeI - 1)
-		CoordenadasY--;
+		++CoordenadasY;
 }
 
 void MonigotesJuego::minusX() {
 	if (CoordenadasX > 0)
-		CoordenadasX--;
+		--CoordenadasX;
 }
 
 void MonigotesJuego::minusY() {
 	if (CoordenadasY > 0)
-		CoordenadasY--;
+		--CoordenadasY;
 }
 
 void MonigotesJuego::setX(int a) {
@@ -170,19 +170,27 @@ void MonigotesJuego::setY(int a) {
 		CoordenadasY = a;
 }
 
-void MonigotesJuego::ComandoPJ(enti::InputKey pulsado, char* mapa) {
+int MonigotesJuego::getX() {
+	return CoordenadasX;
+}
 
-		if (!manager.ActiveTeamIsDone()) { //si el equipo que está jugando aún tiene acciones
+int MonigotesJuego::getY() {
+	return CoordenadasY;
+}
+
+void GameManager::ComandoPJ(enti::InputKey pulsado) {
+
+		if (!ActiveTeamIsDone()) { //si el equipo que está jugando aún tiene acciones
 			switch (pulsado) {
 			case CAMBIAR: CambiarEntio();
 				break;
-			case ARRIBA: manager.submitMove(direction::_Up);
+			case ARRIBA: submitMove(direction::_Up);
 				break;
-			case ABAJO: manager.submitMove(direction::_Down);
+			case ABAJO: submitMove(direction::_Down);
 				break;
-			case DERECHA: manager.submitMove(direction::_Right);
+			case DERECHA: submitMove(direction::_Right);
 				break;
-			case IZQUIERDA: manager.submitMove(direction::_Left);
+			case IZQUIERDA: submitMove(direction::_Left);
 				break;
 			case REHACER:
 				break;
@@ -199,20 +207,20 @@ void MonigotesJuego::ComandoPJ(enti::InputKey pulsado, char* mapa) {
 		}
 	}
 
-void MonigotesJuego::CambiarEntio() //recorre el team activo. Setea el esControlado 
+void GameManager::CambiarEntio() //recorre el team activo. Setea el esControlado 
 	{															//de todos los muñecos a falso y busca al menos fatigado y lo pone en true
 		int ansposition=0;
-		int minimalStress = manager.ActiveTeam().at(0).fatiga;
+		int minimalStress = ActiveTeam().at(0).fatiga;
 
-		for (unsigned int i = 1; i < manager.ActiveTeam().size(); ++i) {
-			if (manager.ActiveTeam().at(i).fatiga < minimalStress) {
+		for (unsigned int i = 1; i < ActiveTeam().size(); ++i) {
+			if (ActiveTeam().at(i).fatiga < minimalStress) {
 				ansposition = i;
-				minimalStress = manager.ActiveTeam().at(i).fatiga;
-				manager.ActiveTeam().at(i).esControlado = false;
+				minimalStress = ActiveTeam().at(i).fatiga;
+				ActiveTeam().at(i).esControlado = false;
 			}
 		}
 
-		manager.ActiveTeam().at(ansposition).esControlado = true;;
+		ActiveTeam().at(ansposition).esControlado = true;;
 	}
 
 
@@ -272,12 +280,14 @@ Map::Map(std::vector<MonigotesJuego> &Team1, std::vector<MonigotesJuego> &Team2)
 
 
 std::vector<MonigotesJuego> GameManager::ActiveTeam() {
-		if (Team1active) return Equipo1;
-		else return Equipo2;
+		if (Team1active) 
+			return Equipo1;
+		else 
+			return Equipo2;
 	}
 
 bool GameManager::ActiveTeamIsDone() {
-		return actions > 0;
+		return actions <= 0;
 	}
 
 void GameManager::Equipo1SetState(bool a) {
@@ -302,6 +312,16 @@ void GameManager::submitMove(direction vector) {
 					break;
 				}
 			}
+			system("cls");
+			//SE EJECUTA UNA VEZ POR JUGADOR, ARREGLAR
+			for (int i = 0; i < SizeI; ++i) {
+				for (int j = 0; j < SizeJ; ++j) {
+
+					std::cout << this->layOut[i][j]; //Primer [] corresponde a las Y, el segundo [] a las X.
+				}
+				std::cout << std::endl;
+			}
+			//limpiar pantalla y volver a pintar el mapa
 		}
 	}
 
@@ -312,6 +332,7 @@ GameManager::GameManager() {
 	for (int i = 0; i < 6; ++i) {
 		Equipo2.push_back(*this);
 	}
+	Equipo1.at(0).esControlado = true;
 	Map* mapa = new Map(Equipo1, Equipo2);
 	layOut = mapa->mapa;
 	for (int i = 0; i < Equipo1.size(); ++i) {
@@ -320,7 +341,7 @@ GameManager::GameManager() {
 	for (int i = 0; i < Equipo2.size(); ++i) {
 		layOut[Equipo2.at(i).getY()][Equipo2.at(i).getX()] = Equipo2.at(i).SimboloMonigote;
 	}
-	Team1active = false;
+	Team1active = true;
 	Team2active = false;
 	actions = 10;
 	}
@@ -491,18 +512,21 @@ void Play() {
 	GameManager* boss = new GameManager();
 	int x = 0;
 
-	//do {
-
-		for (int i = 0; i < SizeI; ++i) {
-			for (int j = 0; j < SizeJ; ++j) {
+	for (int i = 0; i < SizeI; ++i) {
+		for (int j = 0; j < SizeJ; ++j) {
 				
-				std::cout << boss->layOut[i][j]; //Primer [] corresponde a las Y, el segundo [] a las X.
-			}
-			std::cout << std::endl;
+			std::cout << boss->layOut[i][j]; //Primer [] corresponde a las Y, el segundo [] a las X.
 		}
-		int i = 10;
-	//} while (true);
-	
+		std::cout << std::endl;
+	}
+
+	do {
+		enti::InputKey localChar = enti::getInputKey();
+		if (localChar != enti::InputKey::NONE) {
+			boss->ComandoPJ(localChar);
+		}
+		else; //El enti::systemPause se come el inputKey que me interesa. Hacer esto es lo mismo pero sin que se coma el input.
+	} while (true);
 }
 
 
