@@ -317,7 +317,7 @@ void GameManager::submitMove(direction vector) {
 			for (int i = 0; i < SizeI; ++i) {
 				for (int j = 0; j < SizeJ; ++j) {
 
-					std::cout << this->layOut[i][j]; //Primer [] corresponde a las Y, el segundo [] a las X.
+					std::cout << layOut[i][j]; //Primer [] corresponde a las Y, el segundo [] a las X.
 				}
 				std::cout << std::endl;
 			}
@@ -327,7 +327,7 @@ void GameManager::submitMove(direction vector) {
 
 GameManager::GameManager() {
 	for (int i = 0; i < 6; ++i) {
-		Equipo1.push_back(*this);
+		Equipo1.push_back(MonigotesJuego(*this)); //Que diferencia hay?. Se supone que el bueno es el de equipo1
 	}
 	for (int i = 0; i < 6; ++i) {
 		Equipo2.push_back(*this);
