@@ -16,7 +16,7 @@ enum class direction
 #include "Entios.h"
 
 #define ARRIBA enti::InputKey::w //este y todos los demas estaban asi w,W y abajo en la funcion MovimientoPlayer me daba error
-#define ABAJO enti::InputKey::s // nos faltará meter las letras en mayus. El define no creo que le guste mucho a la tona, ya que es de c xD.
+#define ABAJO enti::InputKey::s // nos faltarï¿½ meter las letras en mayus. El define no creo que le guste mucho a la tona, ya que es de c xD.
 #define DERECHA enti::InputKey::d
 #define IZQUIERDA enti::InputKey::a
 #define ATACAR enti::InputKey::SPACEBAR
@@ -37,8 +37,8 @@ void Ataque(int armusa, int &iterador, char &mapa, bool &controlador, int &Conta
 */
 
 /*
-	void ComandoPlayer(char &mapa) //funcion sobre lo que puede hacer el player y como segun esta el mapa variará lo pasamos por referencia
-	{								//esto no funcionará bien porque debe llamarse dentro del gameloop, y en cada iteración reseteamos todas estas variables
+	void ComandoPlayer(char &mapa) //funcion sobre lo que puede hacer el player y como segun esta el mapa variarï¿½ lo pasamos por referencia
+	{								//esto no funcionarï¿½ bien porque debe llamarse dentro del gameloop, y en cada iteraciï¿½n reseteamos todas estas variables
 		bool ControlTurnos = false;
 		int ContadorAcciones = 10;
 		int iterador = 0;
@@ -46,11 +46,11 @@ void Ataque(int armusa, int &iterador, char &mapa, bool &controlador, int &Conta
 		tecla = enti::getInputKey();
 		bool adelante = true; //booleano para controlar que no cambie el turno del jugador si no se aprieta enter
 
-		if (enti::getInputKey() == CAMBIAR_ENTIO && ControlTurnos == false && adelante==true) //si es falso el jugador que controle los monigotes que son letras (Equipo1) hara sus diez acciones,  si es true, el otro las hará
+		if (enti::getInputKey() == CAMBIAR_ENTIO && ControlTurnos == false && adelante==true) //si es falso el jugador que controle los monigotes que son letras (Equipo1) hara sus diez acciones,  si es true, el otro las harï¿½
 		{
 			if (Equipo1.size() == iterador)
 			{
-				iterador = -1; //le meto que sea igual a -1 porque como luego lo primeor que hacemos es augmentarlo, valdra 0, y 0 es una posicion válida
+				iterador = -1; //le meto que sea igual a -1 porque como luego lo primeor que hacemos es augmentarlo, valdra 0, y 0 es una posicion vï¿½lida
 			}
 			iterador++; //lo augmentamos antes porque el primero ya estaba en true
 			Equipo1[iterador - 1].esControlado = false;
@@ -129,7 +129,7 @@ void Ataque(int armusa, int &iterador, char &mapa, bool &controlador, int &Conta
 	}
 	*/
 
-//Los setters son mejores que tener X e Y publicos porque así nos aseguramos de que el PJ no pueda salir del mapa
+//Los setters son mejores que tener X e Y publicos porque asï¿½ nos aseguramos de que el PJ no pueda salir del mapa
 
 MonigotesJuego::MonigotesJuego(GameManager &boss) : manager(boss) {
 	vida = 10;
@@ -139,7 +139,7 @@ MonigotesJuego::MonigotesJuego(GameManager &boss) : manager(boss) {
 	fatiga = 0;
 }
 
-//Con los setters nos aseguramos de que no se sale del mapa. Después en el gameManager haremos que no puedas meterte en la posición de otro entio.
+//Con los setters nos aseguramos de que no se sale del mapa. Despuï¿½s en el gameManager haremos que no puedas meterte en la posiciï¿½n de otro entio.
 void MonigotesJuego::plusX() {
 	if (CoordenadasX < SizeJ - 1)
 		++CoordenadasX;
@@ -180,7 +180,7 @@ int MonigotesJuego::getY() {
 
 void GameManager::ComandoPJ(enti::InputKey pulsado) {
 
-		if (!ActiveTeamIsDone()) { //si el equipo que está jugando aún tiene acciones
+		if (!ActiveTeamIsDone()) { //si el equipo que estï¿½ jugando aï¿½n tiene acciones
 			switch (pulsado) {
 			case CAMBIAR: CambiarEntio();
 				break;
@@ -208,7 +208,7 @@ void GameManager::ComandoPJ(enti::InputKey pulsado) {
 	}
 
 void GameManager::CambiarEntio() //recorre el team activo. Setea el esControlado 
-	{															//de todos los muñecos a falso y busca al menos fatigado y lo pone en true
+	{															//de todos los muï¿½ecos a falso y busca al menos fatigado y lo pone en true
 		int ansposition=0;
 		int minimalStress = ActiveTeam().at(0).fatiga;
 
@@ -232,7 +232,7 @@ Map::Map(std::vector<MonigotesJuego> &Team1, std::vector<MonigotesJuego> &Team2)
 		for (int i = 0; mapOverlay.getline(linia, SizeJ); ++i) { //lee el archivo default.cfg y lo guarda bien ordenadito en el array mapa.
 			for (int j = 0; j < SizeJ; ++j) {
 				//si se encuentra con los players (1, 2, 3, 4, 5, a, b, c, d, e o f), escribe '.' en el mapa
-				switch (linia[j]) {								//y les asigna la posición en la que nos los hemos encontrado.
+				switch (linia[j]) {								//y les asigna la posiciï¿½n en la que nos los hemos encontrado.
 				case 'A': Team1.at(0).setX(j); Team1.at(0).setY(i); Team1.at(0).SimboloMonigote = linia[j];
 					mapa[i][j] = '.';
 					break;
@@ -279,7 +279,7 @@ Map::Map(std::vector<MonigotesJuego> &Team1, std::vector<MonigotesJuego> &Team2)
 	}
 
 
-std::vector<MonigotesJuego> GameManager::ActiveTeam() {
+std::vector<MonigotesJuego>& GameManager::ActiveTeam() {
 		if (Team1active) 
 			return Equipo1;
 		else 
@@ -291,11 +291,13 @@ bool GameManager::ActiveTeamIsDone() {
 	}
 
 void GameManager::Equipo1SetState(bool a) {
-
+	Team2active = !a;
+	Team1active = a;
 	}
 
 void GameManager::Equipo2SetState(bool a) {
-
+	Team2active = a;
+	Team1active = !a;
 	}
 
 void GameManager::submitMove(direction vector) {
@@ -313,7 +315,8 @@ void GameManager::submitMove(direction vector) {
 				}
 			}
 			system("cls");
-			//SE EJECUTA UNA VEZ POR JUGADOR, ARREGLAR
+			//HAY QUE ACTUALIZAR EL LAYOUT ANTES DE PINTARLO
+			//SE EJECUTA UNA VEZ POR JUGADOR, ARREGLAR PARA QUE SE EJECUTE SOLO CUANDO SE ACTUALICE LA POSICIÃ“N DEL PLAYER CONTROLADO
 			for (int i = 0; i < SizeI; ++i) {
 				for (int j = 0; j < SizeJ; ++j) {
 
@@ -330,7 +333,7 @@ GameManager::GameManager() {
 		Equipo1.push_back(MonigotesJuego(*this)); //Que diferencia hay?. Se supone que el bueno es el de equipo1
 	}
 	for (int i = 0; i < 6; ++i) {
-		Equipo2.push_back(*this);
+		Equipo2.push_back(MonigotesJuego(*this));
 	}
 	Equipo1.at(0).esControlado = true;
 	Map* mapa = new Map(Equipo1, Equipo2);
