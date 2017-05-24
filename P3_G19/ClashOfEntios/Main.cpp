@@ -147,7 +147,7 @@ void MonigotesJuego::plusX() {
 
 void MonigotesJuego::plusY() {
 	if (CoordenadasY < SizeI - 1)
-		++CoordenadasY;
+		--CoordenadasY;
 }
 
 void MonigotesJuego::minusX() {
@@ -157,7 +157,7 @@ void MonigotesJuego::minusX() {
 
 void MonigotesJuego::minusY() {
 	if (CoordenadasY > 0)
-		--CoordenadasY;
+		++CoordenadasY;
 }
 
 void MonigotesJuego::setX(int a) {
@@ -286,6 +286,13 @@ std::vector<MonigotesJuego>& GameManager::ActiveTeam() {
 			return Equipo2;
 	}
 
+std::vector<MonigotesJuego>& GameManager::UnactiveTeam() {
+	if (Team1active)
+		return Equipo2;
+	else
+		return Equipo1;
+}
+
 bool GameManager::ActiveTeamIsDone() {
 		return actions <= 0;
 	}
@@ -301,53 +308,59 @@ void GameManager::Equipo2SetState(bool a) {
 	}
 
 void GameManager::submitMove(direction vector) {
-		for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
-			if (ActiveTeam().at(i).esControlado) {
-				switch (vector) {
-				case direction::_Down: ActiveTeam().at(i).minusY();
-					break;
-				case direction::_Left: ActiveTeam().at(i).minusX();
-					break;
-				case direction::_Right: ActiveTeam().at(i).plusX();
-					break;
-				case direction::_Up: ActiveTeam().at(i).plusY();
-					break;
-				}
+	for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
+		if (ActiveTeam().at(i).esControlado) {
+			switch (vector) {
+			case direction::_Down:
+				ActiveTeam().at(i).minusY();
+				break;
+			case direction::_Left:
+				ActiveTeam().at(i).minusX();
+				break;
+			case direction::_Right:
+				ActiveTeam().at(i).plusX();
+				break;
+			case direction::_Up:
+				ActiveTeam().at(i).plusY();
+				break;
 			}
-			system("cls");
-			//HAY QUE ACTUALIZAR EL LAYOUT ANTES DE PINTARLO
-			//SE EJECUTA UNA VEZ POR JUGADOR, ARREGLAR PARA QUE SE EJECUTE SOLO CUANDO SE ACTUALICE LA POSICIÓN DEL PLAYER CONTROLADO
+		}		
+	}
+		system("cls");
+
+		for (int i = 0; i < ActiveTeam().size(); ++i) {
+			layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).SimboloMonigote;
+		}
+		for (int i = 0; i < UnactiveTeam().size(); ++i) {
+			layOut[UnactiveTeam().at(i).getY()][UnactiveTeam().at(i).getX()] = UnactiveTeam().at(i).SimboloMonigote;
+		}
+
 			for (int i = 0; i < SizeI; ++i) {
 				for (int j = 0; j < SizeJ; ++j) {
-
 					std::cout << layOut[i][j]; //Primer [] corresponde a las Y, el segundo [] a las X.
 				}
 				std::cout << std::endl;
 			}
+
 			//limpiar pantalla y volver a pintar el mapa
-		}
+		
 	}
 
 GameManager::GameManager() {
-	for (int i = 0; i < 6; ++i) {
-		Equipo1.push_back(MonigotesJuego(*this)); //Que diferencia hay?. Se supone que el bueno es el de equipo1
-	}
-	for (int i = 0; i < 6; ++i) {
-		Equipo2.push_back(MonigotesJuego(*this));
-	}
-	Equipo1.at(0).esControlado = true;
-	Map* mapa = new Map(Equipo1, Equipo2);
-	layOut = mapa->mapa;
-	for (int i = 0; i < Equipo1.size(); ++i) {
-		layOut[Equipo1.at(i).getY()][Equipo1.at(i).getX()] = Equipo1.at(i).SimboloMonigote;
-	}
-	for (int i = 0; i < Equipo2.size(); ++i) {
-		layOut[Equipo2.at(i).getY()][Equipo2.at(i).getX()] = Equipo2.at(i).SimboloMonigote;
-	}
-	Team1active = true;
-	Team2active = false;
-	actions = 10;
-	}
+		for (int i = 0; i < 6; ++i) {
+			Equipo1.push_back(MonigotesJuego(*this));
+		}
+		for (int i = 0; i < 6; ++i) {
+			Equipo2.push_back(MonigotesJuego(*this));
+		}
+		Equipo1.at(0).esControlado = true;
+		Map* mapa = new Map(Equipo1, Equipo2);
+		layOut = mapa->mapa;
+		Team1active = true;
+		Team2active = false;
+		actions = 10;
+}
+
 
 /*
 void Ataque(int armusa, int &iterador, char &mapa, bool &controlador, int &ContadorAcciones, std::vector <MonigotesJuego> Equipo1, std::vector <MonigotesJuego> Equipo2)
