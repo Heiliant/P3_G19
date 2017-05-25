@@ -233,41 +233,41 @@ Map::Map(std::vector<MonigotesJuego> &Team1, std::vector<MonigotesJuego> &Team2)
 			for (int j = 0; j < SizeJ; ++j) {
 				//si se encuentra con los players (1, 2, 3, 4, 5, a, b, c, d, e o f), escribe '.' en el mapa
 				switch (linia[j]) {								//y les asigna la posici�n en la que nos los hemos encontrado.
-				case 'A': Team1.at(0).setX(j); Team1.at(0).setY(i); Team1.at(0).SimboloMonigote = linia[j];
-					mapa[i][j] = '.';
+				case 'A': Team1.at(0).setX(j); Team1.at(0).setY(i); Team1.at(0).SimboloMonigote = linia[j], Team1.at(0).lastChar='.';
+					mapa[i][j] = Team1.at(0).SimboloMonigote;
 					break;
-				case 'B':Team1.at(1).setX(j);  Team1.at(1).setY(i); Team1.at(1).SimboloMonigote = linia[j];
-					mapa[i][j] = '.';
+				case 'B':Team1.at(1).setX(j);  Team1.at(1).setY(i); Team1.at(1).SimboloMonigote = linia[j]; Team1.at(1).lastChar = '.';
+					mapa[i][j] = Team1.at(1).SimboloMonigote;
 					break;
-				case 'C':Team1.at(2).setX(j); Team1.at(2).setY(i); Team1.at(2).SimboloMonigote = linia[j];
-					mapa[i][j] = '.';
+				case 'C':Team1.at(2).setX(j); Team1.at(2).setY(i); Team1.at(2).SimboloMonigote = linia[j]; Team1.at(2).lastChar = '.';
+					mapa[i][j] = Team1.at(2).SimboloMonigote;
 					break;
-				case 'D':Team1.at(3).setX(j); Team1.at(3).setY(i); Team1.at(3).SimboloMonigote = linia[j];
-					mapa[i][j] = '.';
+				case 'D':Team1.at(3).setX(j); Team1.at(3).setY(i); Team1.at(3).SimboloMonigote = linia[j]; Team1.at(3).lastChar = '.';
+					mapa[i][j] = Team1.at(3).SimboloMonigote;
 					break;
-				case 'E':Team1.at(4).setX(j); Team1.at(4).setY(i); Team1.at(4).SimboloMonigote = linia[j];
-					mapa[i][j] = '.';
+				case 'E':Team1.at(4).setX(j); Team1.at(4).setY(i); Team1.at(4).SimboloMonigote = linia[j]; Team1.at(4).lastChar = '.';
+					mapa[i][j] = Team1.at(4).SimboloMonigote;
 					break;
-				case 'F':Team1.at(5).setX(j); Team1.at(5).setY(i); Team1.at(5).SimboloMonigote = linia[j];
-					mapa[i][j] = '.';
+				case 'F':Team1.at(5).setX(j); Team1.at(5).setY(i); Team1.at(5).SimboloMonigote = linia[j]; Team1.at(5).lastChar = '.';
+					mapa[i][j] = Team1.at(5).SimboloMonigote;
 					break;
-				case '1':Team2.at(0).setX(j); Team2.at(0).setY(i); Team2.at(0).SimboloMonigote = linia[j];
-					mapa[i][j] = '.';
+				case '1':Team2.at(0).setX(j); Team2.at(0).setY(i); Team2.at(0).SimboloMonigote = linia[j]; Team2.at(0).lastChar = '.';
+					mapa[i][j] = Team2.at(0).SimboloMonigote;
 					break;
-				case '2':Team2.at(1).setX(j); Team2.at(1).setY(i); Team2.at(1).SimboloMonigote = linia[j];
-					mapa[i][j] = '.';
+				case '2':Team2.at(1).setX(j); Team2.at(1).setY(i); Team2.at(1).SimboloMonigote = linia[j]; Team2.at(1).lastChar = '.';
+					mapa[i][j] = Team2.at(1).SimboloMonigote;
 					break;
-				case '3':Team2.at(2).setX(j); Team2.at(2).setY(i); Team2.at(2).SimboloMonigote = linia[j];
-					mapa[i][j] = '.';
+				case '3':Team2.at(2).setX(j); Team2.at(2).setY(i); Team2.at(2).SimboloMonigote = linia[j]; Team2.at(2).lastChar = '.';
+					mapa[i][j] = Team2.at(2).SimboloMonigote;
 					break;
-				case '4':Team2.at(3).setX(j); Team2.at(3).setY(i); Team2.at(3).SimboloMonigote = linia[j];
-					mapa[i][j] = '.';
+				case '4':Team2.at(3).setX(j); Team2.at(3).setY(i); Team2.at(3).SimboloMonigote = linia[j]; Team2.at(3).lastChar = '.';
+					mapa[i][j] = Team2.at(3).SimboloMonigote;
 					break;
-				case '5':Team2.at(4).setX(j); Team2.at(4).setY(i); Team2.at(4).SimboloMonigote = linia[j];
-					mapa[i][j] = '.';
+				case '5':Team2.at(4).setX(j); Team2.at(4).setY(i); Team2.at(4).SimboloMonigote = linia[j]; Team2.at(4).lastChar = '.';
+					mapa[i][j] = Team2.at(4).SimboloMonigote;
 					break;
-				case '6':Team2.at(5).setX(j); Team2.at(5).setY(i); Team2.at(5).SimboloMonigote = linia[j];
-					mapa[i][j] = '.';
+				case '6':Team2.at(5).setX(j); Team2.at(5).setY(i); Team2.at(5).SimboloMonigote = linia[j]; Team2.at(5).lastChar = '.';
+					mapa[i][j] = Team2.at(5).SimboloMonigote;
 					break;
 				default:
 					mapa[i][j] = linia[j];
@@ -312,20 +312,28 @@ void GameManager::submitMove(direction vector) {
 		if (ActiveTeam().at(i).esControlado) {
 			switch (vector) {
 			case direction::_Down:
+				layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
 				ActiveTeam().at(i).minusY();
+				i = ActiveTeam().size();
 				break;
 			case direction::_Left:
+				layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
 				ActiveTeam().at(i).minusX();
+				i = ActiveTeam().size();
 				break;
 			case direction::_Right:
+				layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
 				ActiveTeam().at(i).plusX();
+				i = ActiveTeam().size();
 				break;
 			case direction::_Up:
+				layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
 				ActiveTeam().at(i).plusY();
+				i = ActiveTeam().size();
 				break;
 			}
 		}		
-	}
+	}//HACER QUE DEJE DE EJECUTARSE SI ENCUENTRA AL PJ ACTIVO
 		system("cls");
 
 		for (int i = 0; i < ActiveTeam().size(); ++i) {
