@@ -43,6 +43,7 @@ public:
 	//diria que es más conveniente que sea el mapa quien actualiza lo que se dibuja en cada hueco del mismo. De modo que el mapa
 	//sepa donde están los players y pinte el contenido del array y "encima" de esta, el simbolo de los PJ.
 	int fatiga;
+	char lastChar;
 	GameManager& manager;
 
 
