@@ -363,213 +363,22 @@ GameManager::GameManager() {
 
 void GameManager::Ataque()
 {
-	int arma;
-	int direccion;
-	if (ActiveTeam() == Equipo1)
+	if (ActiveTeam()==Equipo1)
 	{
-		if (enti::getInputKey() == ATACAR)
-			std::cout << "Seleccione un arma  1:arco 2:espada" << std::endl; std::cin >> arma;
-
-		if (arma == 1)
+		for (int i = 0; i < Equipo1.size(); i++)
 		{
-			std::cout << "seleccione la direccion de ataque  1:arriba 2:abajo 3:izquierda 4:derecha" << std::endl;
-			std::cin >> direccion;
-
-			if (direccion == 1)
+			if (Equipo1.at(i).esControlado == true)
 			{
-				for (int i = 0; i < Equipo1.size(); i++)
+				for (int casillas = Equipo1.at(i).getX(); casillas < Equipo1.at(i).getX() + 10; casillas++)
 				{
-					if (Equipo1.at(i).esControlado == true)
+					if (layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()]=='A' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'B' ||
+						layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'C' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'D'
+						|| layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'E' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'F') //casillas/casillas para ir aumentando de uno en uno
 					{
-						for (int casillas = Equipo1.at(i).getX(); casillas <= Equipo1.at(i).getX() - 10; casillas--)
+						for (int x = 0; x < Equipo2.size(); x++)
 						{
-							if (layOut[Equipo1.at(i).getX() - (casillas / casillas)][Equipo1.at(i).getY()] == 'A' || layOut[Equipo1.at(i).getX() - (casillas / casillas)][Equipo1.at(i).getY()] == 'B' ||
-								layOut[Equipo1.at(i).getX() - (casillas / casillas)][Equipo1.at(i).getY()] == 'C' || layOut[Equipo1.at(i).getX() - (casillas / casillas)][Equipo1.at(i).getY()] == 'D'
-								|| layOut[Equipo1.at(i).getX() - (casillas / casillas)][Equipo1.at(i).getY()] == 'E' || layOut[Equipo1.at(i).getX() - (casillas / casillas)][Equipo1.at(i).getY()] == 'F') //casillas/casillas para ir aumentando de uno en uno
-							{
-								for (int x = 0; x < Equipo2.size(); x++)
-								{
-									//if (Equipo2.at(x).getX() == Equipo1.at(i).getX() + (casillas / casillas)) Para saber que enemigo esta alli
-										//Equipo2.at(x).vida -=
-								}
-							}
-							if (layOut[Equipo1.at(i).getX() - (casillas / casillas)][Equipo1.at(i).getY()] == 'X')
-								break;
-						}
-					}
-				}
-
-			}
-
-			if (direccion == 2)
-			{
-				for (int i = 0; i < Equipo1.size(); i++)
-				{
-					if (Equipo1.at(i).esControlado == true)
-					{
-						for (int casillas = Equipo1.at(i).getX(); casillas >= Equipo1.at(i).getX() + 10; casillas++)
-						{
-							if (layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'A' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'B' ||
-								layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'C' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'D'
-								|| layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'E' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'F') //casillas/casillas para ir aumentando de uno en uno
-							{
-								for (int x = 0; x < Equipo2.size(); x++)
-								{
-									//if (Equipo2.at(x).getX() == Equipo1.at(i).getX() + (casillas / casillas))
-										//Equipo2.at(x).vida -=
-								}
-							}
-							if (layOut[Equipo1.at(i).getX() - (casillas / casillas)][Equipo1.at(i).getY()] == 'X')
-								break;
-						}
-					}
-				}
-			}
-
-			if (direccion == 3)
-			{
-				for (int i = 0; i < Equipo1.size(); i++)
-				{
-					if (Equipo1.at(i).esControlado == true)
-					{
-						for (int casillas = Equipo1.at(i).getY(); casillas <= Equipo1.at(i).getY() - 10; casillas--)
-						{
-							if (layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY() - (casillas / casillas)] == 'A' || layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY() - (casillas / casillas)] == 'B' ||
-								layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY() - (casillas / casillas)] == 'C' || layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY() - (casillas / casillas)] == 'D'
-								|| layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY() - (casillas / casillas)] == 'E' || layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY() - (casillas / casillas)] == 'F') //casillas/casillas para ir aumentando de uno en uno
-							{
-								for (int x = 0; x < Equipo2.size(); x++)
-								{
-									//if (Equipo2.at(x).getX() == Equipo1.at(i).getX() + (casillas / casillas))
-									//Equipo2.at(x).vida -=
-								}
-							}
-							if (layOut[Equipo1.at(i).getX() - (casillas / casillas)][Equipo1.at(i).getY()] == 'X')
-								break;
-						}
-					}
-				}
-			}
-
-			if (direccion == 4)
-			{
-				for (int i = 0; i < Equipo1.size(); i++)
-				{
-					if (Equipo1.at(i).esControlado == true)
-					{
-						for (int casillas = Equipo1.at(i).getY(); casillas <= Equipo1.at(i).getY() + 10; casillas++)
-						{
-							if (layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY() + (casillas / casillas)] == 'A' || layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY() + (casillas / casillas)] == 'B' ||
-								layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY() + (casillas / casillas)] == 'C' || layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY() + (casillas / casillas)] == 'D'
-								|| layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY() + (casillas / casillas)] == 'E' || layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY() + (casillas / casillas)] == 'F') //casillas/casillas para ir aumentando de uno en uno
-							{
-								for (int x = 0; x < Equipo2.size(); x++)
-								{
-									//if (Equipo2.at(x).getX() == Equipo1.at(i).getX() + (casillas / casillas))
-									//Equipo2.at(x).vida -=
-								}
-							}
-							if (layOut[Equipo1.at(i).getX() - (casillas / casillas)][Equipo1.at(i).getY()] == 'X')
-								break;
-						}
-					}
-				}
-			}
-		}
-
-		if (arma == 2)
-		{
-			int direction;
-			std::cout << "seleccione la direccion en la que quiere atacar 1:derecha 2:izquierda 3:arriba 4:abajo" << std::endl;
-			std::cin >> direction;
-
-			if (direction == 1)
-			{
-				for (int i = 0; i < Equipo1.size(); i++)
-				{
-					if (Equipo1.at(i).esControlado == true)
-					{
-						if (layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY()+1] == 'A' || layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY()+1] == 'B' ||
-							layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY()+1] == 'C' || layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY()+1] == 'D'
-							|| layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY()+1] == 'E' || layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY()+1] == 'F')
-						{
-							for (int x = 0; x < Equipo2.size(); x++)
-							{
-								if (Equipo2.at(x).getY() == Equipo1.at(i).getY() + 1)//comprueba que enemigo esta en la casilla adyaciente derecha y lo mata
-								{
-									Equipo2.at(x).dead = true;
-									Equipo2.erase(Equipo2.begin() + x);
-								}
-							}
-						}
-					}
-				}
-			}
-
-			if (direction == 2)
-			{
-				for (int i = 0; i < Equipo1.size(); i++)
-				{
-					if (Equipo1.at(i).esControlado == true)
-					{
-						if (layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY() - 1] == 'A' || layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY() - 1] == 'B' ||
-							layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY() - 1] == 'C' || layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY() - 1] == 'D'
-							|| layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY() - 1] == 'E' || layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY() - 1] == 'F')
-						{
-							for (int x = 0; x < Equipo2.size(); x++)
-							{
-								if (Equipo2.at(x).getY() == Equipo1.at(i).getY() - 1)//comprueba que enemigo esta en la casilla adyaciente izquierda y lo mata
-								{
-									Equipo2.at(x).dead = true;
-									Equipo2.erase(Equipo2.begin() + x);
-								}
-							}
-						}
-					}
-				}
-			}
-
-			if (direction == 3)
-			{
-				for (int i = 0; i < Equipo1.size(); i++)
-				{
-					if (Equipo1.at(i).esControlado == true)
-					{
-						if (layOut[Equipo1.at(i).getX()-1][Equipo1.at(i).getY()] == 'A' || layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY()-1] == 'B' ||
-							layOut[Equipo1.at(i).getX()-1][Equipo1.at(i).getY()] == 'C' || layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY()-1] == 'D'
-							|| layOut[Equipo1.at(i).getX()-1][Equipo1.at(i).getY()] == 'E' || layOut[Equipo1.at(i).getX()][Equipo1.at(i).getY()-1] == 'F')
-						{
-							for (int x = 0; x < Equipo2.size(); x++)
-							{
-								if (Equipo2.at(x).getX() == Equipo1.at(i).getX()-1)//comprueba que enemigo esta en la casilla adyaciente superior y lo mata
-								{
-									Equipo2.at(x).dead = true;
-									Equipo2.erase(Equipo2.begin() + x);
-								}
-							}
-						}
-					}
-				}
-			}
-
-			if (direction == 4)
-			{
-				for (int i = 0; i < Equipo1.size(); i++)
-				{
-					if (Equipo1.at(i).esControlado == true)
-					{
-						if (layOut[Equipo1.at(i).getX()+1][Equipo1.at(i).getY()] == 'A' || layOut[Equipo1.at(i).getX()+1][Equipo1.at(i).getY()] == 'B' ||
-							layOut[Equipo1.at(i).getX()+1][Equipo1.at(i).getY()] == 'C' || layOut[Equipo1.at(i).getX()+1][Equipo1.at(i).getY()] == 'D'
-							|| layOut[Equipo1.at(i).getX()+1][Equipo1.at(i).getY()] == 'E' || layOut[Equipo1.at(i).getX()+1][Equipo1.at(i).getY()] == 'F')
-						{
-							for (int x = 0; x < Equipo2.size(); x++)
-							{
-								if (Equipo2.at(x).getX() == Equipo1.at(i).getX() + 1)//comprueba que enemigo esta en la casilla adyaciente superior y lo mata
-								{
-									Equipo2.at(x).dead = true;
-									Equipo2.erase(Equipo2.begin() + x);
-								}
-							}
+							if (Equipo2.at(x).getX()== Equipo1.at(i).getX() + (casillas / casillas))
+								Equipo2.at(x).vida-=
 						}
 					}
 				}
