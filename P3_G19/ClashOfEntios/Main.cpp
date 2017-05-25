@@ -152,7 +152,7 @@ void MonigotesJuego::plusY() {
 
 void MonigotesJuego::minusX() {
 	if (CoordenadasX > 0)
-		--CoordenadasX;
+		this->CoordenadasX--;
 }
 
 void MonigotesJuego::minusY() {
