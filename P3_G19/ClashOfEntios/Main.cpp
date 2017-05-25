@@ -146,7 +146,7 @@ void MonigotesJuego::plusX() {
 }
 
 void MonigotesJuego::plusY() {
-	if (CoordenadasY < SizeI - 1)
+	if (CoordenadasY > 0)
 		--CoordenadasY;
 }
 
@@ -156,7 +156,7 @@ void MonigotesJuego::minusX() {
 }
 
 void MonigotesJuego::minusY() {
-	if (CoordenadasY > 0)
+	if (CoordenadasY < SizeI-1)
 		++CoordenadasY;
 }
 
@@ -307,12 +307,13 @@ void GameManager::Equipo2SetState(bool a) {
 	Team1active = !a;
 	}
 
-void GameManager::submitMove(direction vector) {
+void GameManager::submitMove(direction vector) { //apañar el last char
 	for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
 		if (ActiveTeam().at(i).esControlado) {
 			switch (vector) {
 			case direction::_Down:
 				layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
+				//ActiveTeam().at(i).lastChar=
 				ActiveTeam().at(i).minusY();
 				i = ActiveTeam().size();
 				break;
@@ -345,11 +346,33 @@ void GameManager::submitMove(direction vector) {
 
 			for (int i = 0; i < SizeI; ++i) {
 				for (int j = 0; j < SizeJ; ++j) {
-					std::cout << layOut[i][j]; //Primer [] corresponde a las Y, el segundo [] a las X.
+					switch (layOut[i][j]) {
+					case'X': enti::cout << enti::Color::LIGHTRED << layOut[i][j];
+						break;
+					case '.': enti::cout << enti::Color::WHITE << layOut[i][j];
+						break;
+					case':': enti::cout << enti::Color::LIGHTGREEN << layOut[i][j];
+						break;
+					case 'O': enti::cout << enti::Color::LIGHTCYAN << layOut[i][j];
+						break;
+					case 'A':
+					case 'B':
+					case 'C':
+					case 'D':
+					case 'E':
+					case 'F':
+					case '1':
+					case '2':
+					case '3':
+					case '4':
+					case '5':
+					case '6': enti::cout << enti::Color::YELLOW << layOut[i][j];
+						break;
+					}			//Primer [] corresponde a las Y, el segundo [] a las X.
 				}
-				std::cout << std::endl;
+				enti::cout << enti::endl;
 			}
-
+			enti::cout << enti::cend;
 			//limpiar pantalla y volver a pintar el mapa
 		
 	}
