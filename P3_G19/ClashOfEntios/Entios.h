@@ -22,6 +22,7 @@ public:
 	void submitMove(direction vector);
 	void ComandoPJ(enti::InputKey pulsado);
 	void CambiarEntio();
+	void Ataque();
 	GameManager();
 };
 
@@ -46,8 +47,6 @@ public:
 
 
 	MonigotesJuego(GameManager &boss);//constructor de los monigotes
-
-	
 
 
 	void plusX();

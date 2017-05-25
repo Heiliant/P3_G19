@@ -64,22 +64,22 @@ void Ataque(int armusa, int &iterador, char &mapa, bool &controlador, int &Conta
 			{
 
 			case ARRIBA:
-				Equipo1[iterador].CoordenadasX -= 1;
+				Equipo1[iterador].getX() -= 1;
 				ContadorAcciones -= 1;
 				break;
 
 			case ABAJO:
-				Equipo1[iterador].CoordenadasX += 1;
+				Equipo1[iterador].getX() += 1;
 				ContadorAcciones -= 1;
 				break;
 
 			case DERECHA:
-				Equipo1[iterador].CoordenadasY += 1;
+				Equipo1[iterador].getY() += 1;
 				ContadorAcciones -= 1;
 				break;
 
 			case IZQUIERDA:
-				Equipo1[iterador].CoordenadasY -= 1;
+				Equipo1[iterador].getY() -= 1;
 				ContadorAcciones -= 1;
 				break;
 
@@ -141,41 +141,41 @@ MonigotesJuego::MonigotesJuego(GameManager &boss) : manager(boss) {
 
 //Con los setters nos aseguramos de que no se sale del mapa. Despu�s en el gameManager haremos que no puedas meterte en la posici�n de otro entio.
 void MonigotesJuego::plusX() {
-	if (CoordenadasX < SizeJ - 1)
-		++CoordenadasX;
+	if (getX() < SizeJ - 1)
+		++getX();
 }
 
 void MonigotesJuego::plusY() {
-	if (CoordenadasY < SizeI - 1)
-		--CoordenadasY;
+	if (getY() < SizeI - 1)
+		--getY();
 }
 
 void MonigotesJuego::minusX() {
-	if (CoordenadasX > 0)
-		--CoordenadasX;
+	if (getX() > 0)
+		--getX();
 }
 
 void MonigotesJuego::minusY() {
-	if (CoordenadasY > 0)
-		++CoordenadasY;
+	if (getY() > 0)
+		++getY();
 }
 
 void MonigotesJuego::setX(int a) {
 	if (a >= 0 && a < SizeJ)
-		CoordenadasX = a;
+		getX() = a;
 }
 
 void MonigotesJuego::setY(int a) {
 	if (a >= 0 && a < SizeI)
-		CoordenadasY = a;
+		getY() = a;
 }
 
 int MonigotesJuego::getX() {
-	return CoordenadasX;
+	return getX();
 }
 
 int MonigotesJuego::getY() {
-	return CoordenadasY;
+	return getY();
 }
 
 void GameManager::ComandoPJ(enti::InputKey pulsado) {
@@ -354,173 +354,36 @@ GameManager::GameManager() {
 			Equipo2.push_back(MonigotesJuego(*this));
 		}
 		Equipo1.at(0).esControlado = true;
-		Map* mapa = new Map(Equipo1, Equipo2);
-		layOut = mapa->mapa;
+		Map* terreno = new Map(Equipo1, Equipo2);
+		layOut = terreno->mapa;
 		Team1active = true;
 		Team2active = false;
 		actions = 10;
 }
 
-
-/*
-void Ataque(int armusa, int &iterador, char &mapa, bool &controlador, int &ContadorAcciones, std::vector <MonigotesJuego> Equipo1, std::vector <MonigotesJuego> Equipo2)
+void GameManager::Ataque()
 {
-	bool CasillaOcupada = false; //se pondra true si hay un enemigo del actual equipo a rango
-	int i = 0;
-
-	if (armusa = 1)
+	if (ActiveTeam()==Equipo1)
 	{
-		if (controlador = false) //significa que esta jugando el Equipo1 (el de letras)
+		for (int i = 0; i < Equipo1.size(); i++)
 		{
-			for (int jota = Equipo1[iterador].CoordenadasX; jota < Equipo1[iterador].CoordenadasX + 10; jota++) //recorro diez posiciones desde su x hasta su x+10
+			if (Equipo1.at(i).esControlado == true)
 			{
-				if (mapa[i][Equipo1[iterador].CoordenadasX + (jota / jota)] != 'A' && mapa[i][Equipo1[iterador].CoordenadasX  +(jota / jota)] != 'B' && mapa[i][Equipo1[iterador].CoordenadasX +(jota / jota)] != 'C' //comprobaciones de si hay un enemigo
-					&& mapa[i][Equipo1[iterador].CoordenadasX + (jota / jota)] != 'D' && mapa[i][Equipo1[iterador].CoordenadasX +(jota / jota)] != 'E' && mapa[i][Equipo1[iterador].CoordenadasX  +(jota / jota)] != 'F' &&
-					mapa[i][Equipo1[iterador].CoordenadasX + (jota / jota)] != 'X' && mapa[i][Equipo1[iterador].CoordenadasX + (jota / jota)] != 'O' && mapa[i][Equipo1[iterador].CoordenadasX  +(jota / jota)] != ':' &&
-					mapa[i][Equipo1[iterador].CoordenadasX + (jota / jota)] != '.')
+				for (int casillas = Equipo1.at(i).getX(); casillas < Equipo1.at(i).getX() + 10; casillas++)
 				{
-					for (auto &x : Equipo2) //recorro Equipo2 comparando los simbolos de su contenido para saber a quien le resto vida
+					if (layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()]=='A' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'B' ||
+						layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'C' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'D'
+						|| layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'E') //casillas/casillas para ir aumentando de uno en uno
 					{
-						if (x.SimboloMonigote == mapa[i][Equipo1[iterador].CoordenadasX + (jota / jota)])
-							x.vida -= ;
-						Equipo1[iterador].Flechas--;
+
 					}
 				}
-
-			}
-
-			for (int jota = Equipo1[iterador].CoordenadasX; jota < Equipo1[iterador].CoordenadasX - 10; jota++)//recorro diez posiciones desde su x hasta su x-10
-			{
-				if (mapa[i][Equipo1[iterador].CoordenadasX - (jota / jota)] != 'A' && mapa[i][Equipo1[iterador].CoordenadasX - (jota / jota)] != 'B' && mapa[i][Equipo1[iterador].CoordenadasX - (jota / jota)] != 'C' //comprobaciones de si hay un enemigo
-					&& mapa[i][Equipo1[iterador].CoordenadasX + (jota / jota)] != 'D' && mapa[i][Equipo1[iterador].CoordenadasX - (jota / jota)] != 'E' && mapa[i][Equipo1[iterador].CoordenadasX - (jota / jota)] != 'F' &&
-					mapa[i][Equipo1[iterador].CoordenadasX - (jota / jota)] != 'X' && mapa[i][Equipo1[iterador].CoordenadasX - (jota / jota)] != 'O' && mapa[i][Equipo1[iterador].CoordenadasX - (jota / jota)] != ':' &&
-					mapa[i][Equipo1[iterador].CoordenadasX - (jota / jota)] != '.')
-				{
-					for (auto &x : Equipo2)
-					{
-						if (x.SimboloMonigote == mapa[i][Equipo1[iterador].CoordenadasX - (jota / jota)])
-							x.vida -= rand() % 4; ContadorAcciones -= 1;
-						Equipo1[iterador].Flechas--;
-					}
-				}
-
-			}
-
-			for (int jota = Equipo1[iterador].CoordenadasY; jota > Equipo1[iterador].CoordenadasY + 10; jota++) //lo mismo para las y
-			{
-				if (mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != 'A' && mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != 'B' && mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != 'C' //comprobaciones de si hay un enemigo
-					&& mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != 'D' && mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != 'E' && mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != 'F' &&
-					mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != 'X' && mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != 'O' && mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != ':' &&
-					mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != '.')
-				{
-					for (auto &x : Equipo2)
-					{
-						if (x.SimboloMonigote == mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)])
-							x.vida -= rand() % 4; ContadorAcciones -= 1;
-						Equipo1[iterador].Flechas--;
-					}
-				}
-
-			}
-
-			for (int jota = Equipo1[iterador].CoordenadasY; jota < Equipo1[iterador].CoordenadasX - 10; jota++)
-			{
-				if (mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != 'A' && mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != 'B' && mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != 'C' //comprobaciones de si hay un enemigo
-					&& mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != 'D' && mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != 'E' && mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != 'F' &&
-					mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != 'X' && mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != 'O' && mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != ':' &&
-					mapa[i][Equipo1[iterador].CoordenadasY + (jota / jota)] != '.')
-				{
-					for (auto &x : Equipo2)
-					{
-						if (x.SimboloMonigote == mapa[i][Equipo1[iterador].CoordenadasX + (jota / jota)])
-							x.vida -= rand() % 4; ContadorAcciones -= 1;
-						Equipo1[iterador].Flechas--;
-					}
-				}
-
-			}
-		}
-		else //lo mismo de antes pero con el boolean al reves, por lo tanto cambiando de equipo
-		{
-			for (int jota = Equipo2[iterador].CoordenadasX; jota < Equipo2[iterador].CoordenadasX + 10; jota++)
-			{
-				if (mapa[i][Equipo2[iterador].CoordenadasX + (jota / jota)] != 'A' && mapa[i][Equipo2[iterador].CoordenadasX + (jota / jota)] != 'B' && mapa[i][Equipo2[iterador].CoordenadasX + (jota / jota)] != 'C' //comprobaciones de si hay un enemigo
-					&& mapa[i][Equipo2[iterador].CoordenadasX + (jota / jota)] != 'D' && mapa[i][Equipo2[iterador].CoordenadasX + (jota / jota)] != 'E' && mapa[i][Equipo2[iterador].CoordenadasX + (jota / jota)] != 'F' &&
-					mapa[i][Equipo2[iterador].CoordenadasX + (jota / jota)] != 'X' && mapa[i][Equipo2[iterador].CoordenadasX + (jota / jota)] != 'O' && mapa[i][Equipo2[iterador].CoordenadasX + (jota / jota)] != ':' &&
-					mapa[i][Equipo2[iterador].CoordenadasX + (jota / jota)] != '.')
-				{
-					for (auto &x : Equipo1) //recorro Equipo2 comparando los simbolos de su contenido para saber a quien le resto vida
-					{
-						if (x.SimboloMonigote == mapa[i][Equipo2[iterador].CoordenadasX + (jota / jota)])
-							x.vida -= rand() % 4; ContadorAcciones -= 1;
-						Equipo2[iterador].Flechas--;
-					}
-				}
-
-			}
-
-			for (int jota = Equipo2[iterador].CoordenadasX; jota < Equipo2[iterador].CoordenadasX - 10; jota++)
-			{
-				if (mapa[i][Equipo2[iterador].CoordenadasX - (jota / jota)] != 'A' && mapa[i][Equipo2[iterador].CoordenadasX - (jota / jota)] != 'B' && mapa[i][Equipo2[iterador].CoordenadasX - (jota / jota)] != 'C' //comprobaciones de si hay un enemigo
-					&& mapa[i][Equipo2[iterador].CoordenadasX + (jota / jota)] != 'D' && mapa[i][Equipo2[iterador].CoordenadasX - (jota / jota)] != 'E' && mapa[i][Equipo2[iterador].CoordenadasX - (jota / jota)] != 'F' &&
-					mapa[i][Equipo2[iterador].CoordenadasX - (jota / jota)] != 'X' && mapa[i][Equipo2[iterador].CoordenadasX - (jota / jota)] != 'O' && mapa[i][Equipo2[iterador].CoordenadasX - (jota / jota)] != ':' &&
-					mapa[i][Equipo2[iterador].CoordenadasX - (jota / jota)] != '.')
-				{
-					for (auto &x : Equipo1)
-					{
-						if (x.SimboloMonigote == mapa[i][Equipo2[iterador].CoordenadasX - (jota / jota)])
-							x.vida -= rand() % 4; ContadorAcciones -= 1;
-						Equipo2[iterador].Flechas--;
-					}
-				}
-
-			}
-
-			for (int jota = Equipo2[iterador].CoordenadasY; jota > Equipo2[iterador].CoordenadasY + 10; jota++)
-			{
-				if (mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != 'A' && mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != 'B' && mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != 'C' //comprobaciones de si hay un enemigo
-					&& mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != 'D' && mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != 'E' && mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != 'F' &&
-					mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != 'X' && mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != 'O' && mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != ':' &&
-					mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != '.')
-				{
-					for (auto &x : Equipo1)
-					{
-						if (x.SimboloMonigote == mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)])
-							x.vida -= rand() % 4; ContadorAcciones -= 1;
-						Equipo2[iterador].Flechas--;
-					}
-				}
-
-			}
-
-			for (int jota = Equipo2[iterador].CoordenadasY; jota < Equipo2[iterador].CoordenadasX - 10; jota++)
-			{
-				if (mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != 'A' && mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != 'B' && mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != 'C' //comprobaciones de si hay un enemigo
-					&& mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != 'D' && mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != 'E' && mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != 'F' &&
-					mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != 'X' && mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != 'O' && mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != ':' &&
-					mapa[i][Equipo2[iterador].CoordenadasY + (jota / jota)] != '.')
-				{
-					for (auto &x : Equipo1)
-					{
-						if (x.SimboloMonigote == mapa[i][Equipo2[iterador].CoordenadasX + (jota / jota)])
-							x.vida -= rand() % 4; ContadorAcciones -= 1;
-						Equipo2[iterador].Flechas--;
-					}
-				}
-
 			}
 		}
 	}
 
-		else if (armusa == 0)
-		{
-
-		}
 }
 
-
-
-*/
 
 
 void Play() {
