@@ -14,7 +14,8 @@ private:
 public:
 	//std::stack<GameManager> historial;
 	char(*layOut)[SizeJ];
-	std::vector<MonigotesJuego> ActiveTeam();
+	std::vector<MonigotesJuego>& ActiveTeam();
+	std::vector<MonigotesJuego>& UnactiveTeam();
 	bool ActiveTeamIsDone();
 	void Equipo1SetState(bool a);
 	void Equipo2SetState(bool a);
