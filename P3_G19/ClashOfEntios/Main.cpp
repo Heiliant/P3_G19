@@ -140,7 +140,7 @@ MonigotesJuego::MonigotesJuego(GameManager &boss) : manager(boss) {
 }
 
 //Con los setters nos aseguramos de que no se sale del mapa. Despu�s en el gameManager haremos que no puedas meterte en la posici�n de otro entio.
-void MonigotesJuego::plusX() {
+/*void MonigotesJuego::plusX() {
 	if (getX() < SizeJ - 1)
 		++getX();
 }
@@ -176,7 +176,7 @@ int MonigotesJuego::getX() {
 
 int MonigotesJuego::getY() {
 	return getY();
-}
+}*/
 
 void GameManager::ComandoPJ(enti::InputKey pulsado) {
 
@@ -373,9 +373,13 @@ void GameManager::Ataque()
 				{
 					if (layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()]=='A' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'B' ||
 						layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'C' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'D'
-						|| layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'E') //casillas/casillas para ir aumentando de uno en uno
+						|| layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'E' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'F') //casillas/casillas para ir aumentando de uno en uno
 					{
-
+						for (int x = 0; x < Equipo2.size(); x++)
+						{
+							if (Equipo2.at(x).getX()== Equipo1.at(i).getX() + (casillas / casillas))
+								Equipo2.at(x).vida-=
+						}
 					}
 				}
 			}
