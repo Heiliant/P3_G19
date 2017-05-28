@@ -30,11 +30,7 @@ enum class ATQStatus { _NULL, _CHOOSE, _ACT, _REPORT, _MAX };
 #define REHACER enti::InputKey::z
 #define REHACERM enti::InputKey::Z
 #define CAMBIAR enti::InputKey::ENTER
-#define ATRAS enti::InputKey::ESC
-
-enti::InputKey tecla;
-enum class Arma { SWORD, BOW };
-
+#define SALIR enti::InputKey::ESC
 
 void GameManager::Ataque()
 {
@@ -54,6 +50,7 @@ void GameManager::Ataque()
 		enti::cout << enti::Color::YELLOW << "4 - RIGHT" << enti::endl;
 		break;
 	case ATQStatus::_REPORT:
+		historial.push(std::pair<std::vector<MonigotesJuego>, std::vector<MonigotesJuego>>{Equipo1, Equipo2});
 		std::pair<int, int> localDir;//el primero son las Y y el segundo las X
 		switch (ATQKey) {
 		case enti::InputKey::NUM1: //up	
@@ -202,7 +199,6 @@ void MonigotesJuego::goToSleep() {
 }
 
 void GameManager::ComandoPJ(enti::InputKey pulsado) {
-	bool localCheck=false;
 		switch (pulsado) {
 		case CAMBIAR: CambiarEntio();
 			break;
@@ -218,15 +214,13 @@ void GameManager::ComandoPJ(enti::InputKey pulsado) {
 		case IZQUIERDAM:
 		case IZQUIERDA: submitMove(direction::_Left);
 			break;
-		case REHACER: Undo(); localCheck = true;
+		case REHACER: if(actions!=0) Undo(); 
 			break;
-		case ATRAS:
+		case SALIR:
 			break;
 		case ATACAR: if (actions>0) estado = ATQStatus::_CHOOSE;
 			break;
 		}
-		if(!localCheck)
-			historial.push(std::pair<std::vector<MonigotesJuego>, std::vector<MonigotesJuego>>{Equipo1, Equipo2});
 }
 
 MonigotesJuego& GameManager::setAndFindStress() {
@@ -250,6 +244,7 @@ void GameManager::CambiarEntio() {
 
 	if (actions > 0) {//si al equipo activo le quedan acciones, busca al entio menos fatigado y le da el control, a la vez que se lo quita al entio activo.
 		//es posible que el entio al que se le da el control sea el entio que estaba activo en un principio.
+		historial.push(std::pair<std::vector<MonigotesJuego>, std::vector<MonigotesJuego>>{Equipo1, Equipo2});
 		setAndFindStress();
 		actions--;
 	}
@@ -363,6 +358,7 @@ void GameManager::Equipo2SetState(bool a) {
 
 void GameManager::submitMove(direction vector) {
 	if (actions!=0) {
+		historial.push(std::pair<std::vector<MonigotesJuego>, std::vector<MonigotesJuego>>{Equipo1, Equipo2});
 		for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
 			if (ActiveTeam().at(i).esControlado) {
 				switch (vector) {
@@ -443,13 +439,14 @@ void GameManager::GameStatus() {
 }
 
 void GameManager::Undo() {
+
 	if (historial.size()>0) {
 		for (int i = 0; i < ActiveTeam().size(); ++i) {
 			layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
 		}
 		Equipo1 = historial.top().first;
 		Equipo2 = historial.top().second;
-		if (actions != 0 && actions!=10)
+		if (actions!=10)
 			actions++;
 		historial.pop();
 	}
