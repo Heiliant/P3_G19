@@ -217,13 +217,14 @@ void GameManager::ComandoPJ(enti::InputKey pulsado) {
 		case IZQUIERDAM:
 		case IZQUIERDA: submitMove(direction::_Left);
 			break;
-		case REHACER:
+		case REHACER: Undo();
 			break;
 		case ATRAS:
 			break;
 		case ATACAR: if (actions>0) estado = ATQStatus::_CHOOSE;
 			break;
 		}
+		historial.push(std::pair<std::vector<MonigotesJuego>, std::vector<MonigotesJuego>>{Equipo1, Equipo2});
 }
 
 MonigotesJuego& GameManager::setAndFindStress() {
@@ -439,6 +440,14 @@ void GameManager::GameStatus() {
 	}
 }
 
+void GameManager::Undo() {
+	if (historial.size()>0) {
+		Equipo1 = historial.top().first;
+		Equipo2 = historial.top().second;
+		historial.pop();
+	}
+}
+
 GameManager::GameManager(){
 	for (int i = 0; i < 6; ++i) {
 		Equipo1.push_back(MonigotesJuego(*this));
@@ -521,14 +530,26 @@ void Play() {
 			localWinner = 2;
 		enti::cout << enti::Color::LIGHTGRAY << "CONGRATULATIONS! Team " << localWinner << " has won." << enti::endl;
 		enti::cout << "Play again? (Y/N) " << enti::cend;
+		delete boss;
+		boss = nullptr;
 	}
 }
 
 
 void main()
 {
+	replay:
 	Play();
 	do {
 		enti::InputKey a = enti::getInputKey();
+		if (a == enti::InputKey::Y || a == enti::InputKey::y) {
+			system("cls");
+			goto replay;
+		}
+		else if (a == enti::InputKey::N || a == enti::InputKey::n) {
+
+			break;
+		}
+		else;
 	} while (true);
 }

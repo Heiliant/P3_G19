@@ -2,17 +2,20 @@
 
 class MonigotesJuego;
 
+
+
 class GameManager { //el gamemanager controlará, básicamente, todo. A quien le toca jugar, donde está cada entio, 
 					//cuando alguien puede moverse, las acciones restantes...
 private:
 	std::vector<MonigotesJuego> Equipo1;
 	std::vector<MonigotesJuego> Equipo2;
 	int actions;
-
+	
 public:
 	bool Team1active;
 	bool Team2active;
-	//std::stack<GameManager> historial;
+	std::stack<std::pair<std::vector<MonigotesJuego>, std::vector<MonigotesJuego>>> historial;
+	void Undo();
 	char(*layOut)[SizeJ];
 	std::vector<MonigotesJuego>& ActiveTeam();
 	std::vector<MonigotesJuego>& UnactiveTeam();
@@ -66,7 +69,9 @@ public:
 	void goToSleep();
 };
 
-
+bool operator ==(MonigotesJuego &a, MonigotesJuego &b) {
+	return(a.getHP() == b.getHP());
+}
 
 
 
