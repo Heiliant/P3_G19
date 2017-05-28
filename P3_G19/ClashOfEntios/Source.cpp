@@ -6,6 +6,7 @@
 #include <stack>
 #include <algorithm>
 #include <queue>
+#include <limits>
 const int SizeJ = 74;
 const int SizeI = 36;
 enum class direction
@@ -112,7 +113,7 @@ void GameManager::Ataque()
 				enti::cout << enti::Color::LIGHTMAGENTA << "Entio " << localPos << " life " << UnactiveTeam().at(localPos).getHP() << enti::endl;
 			else {
 				enti::cout << enti::Color::LIGHTMAGENTA << "Entio killed! " << enti::endl;
-				delete  &UnactiveTeam().at(localPos);
+				UnactiveTeam().at(localPos).goToSleep();
 			}
 		}
 		else {
@@ -121,57 +122,15 @@ void GameManager::Ataque()
 		break;
 	}
 
-	
-
-
-
-
-
-
-	/*
-	for (unsigned int i = 0; i < ActiveTeam().size(); i++)
-	{
-		if (ActiveTeam().at(i).esControlado)
-		{
-			for (unsigned  int casillas = Equipo1.at(i).getX(); casillas < Equipo1.at(i).getX() + 10; casillas++)
-			{
-				if (layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'A' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'B' ||
-					layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'C' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'D'
-					|| layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'E' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'F') //casillas/casillas para ir aumentando de uno en uno
-				{
-					for (int x = 0; x < Equipo2.size(); x++)
-					{
-						if (Equipo2.at(x).getX() == Equipo1.at(i).getX() + (casillas / casillas))
-							Equipo2.at(x).vida -= 20;
-						
-					}
-				}
-			}
-		}
-	}*/
-
 }
 
-
-void Muerte(std::vector <MonigotesJuego> Equipo1, std::vector <MonigotesJuego> Equipo2); //forward declaration
-
-
-//Los setters son mejores que tener X e Y publicos porque as? nos aseguramos de que el PJ no pueda salir del mapa
-
 MonigotesJuego::MonigotesJuego(GameManager &boss) : manager(boss) {
-	CoordenadasX = 0;
-	CoordenadasY = 0;
 	vida = 10;
 	flechas = 10;
-	dead = false;
 	esControlado = false;
 	turnsPlayed=0;
 	movesAct = 0;
 	hasPlayed = false;
-}
-
-MonigotesJuego::~MonigotesJuego() {
-		manager.layOut[CoordenadasY][CoordenadasX] = lastChar; //hay que arreglar esto
 }
 
 //Con los setters nos aseguramos de que no se sale del mapa. Despu?s en el gameManager haremos que no puedas meterte en la posici?n de otro entio.
@@ -231,6 +190,17 @@ int MonigotesJuego::getHP() {
 	return vida;
 }
 
+
+void MonigotesJuego::goToSleep() {
+	SimboloMonigote = lastChar;
+	manager.layOut[CoordenadasY][CoordenadasX] = lastChar;
+	for (int i = 0; i < manager.UnactiveTeam().size(); ++i) {
+		if (manager.UnactiveTeam().at(i).SimboloMonigote == SimboloMonigote)
+			manager.UnactiveTeam().at(i).turnsPlayed = std::numeric_limits<int>::max()/2;
+	}
+	
+}
+
 void GameManager::ComandoPJ(enti::InputKey pulsado) {
 		switch (pulsado) {
 		case CAMBIAR: CambiarEntio();
@@ -251,7 +221,7 @@ void GameManager::ComandoPJ(enti::InputKey pulsado) {
 			break;
 		case ATRAS:
 			break;
-		case ATACAR: estado = ATQStatus::_CHOOSE;
+		case ATACAR: if (actions>0) estado = ATQStatus::_CHOOSE;
 			break;
 		}
 }
@@ -283,10 +253,11 @@ void GameManager::CambiarEntio() {
 	else {
 		for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
 			ActiveTeam().at(i).movesAct = 0;
-			if (ActiveTeam().at(i).hasPlayed)
+			if (ActiveTeam().at(i).hasPlayed) {
 				ActiveTeam().at(i).turnsPlayed++;
-			else
-				ActiveTeam().at(i).turnsPlayed = 0;
+				ActiveTeam().at(i).hasPlayed = false;
+			}
+
 		}
 			Equipo1SetState(Team2active);
 			setAndFindStress();
@@ -437,6 +408,7 @@ void GameManager::submitMove(direction vector) {
 void GameManager::GameStatus() {
 	if (!ActiveTeamIsDone()) {
 		system("cls");
+		char localActive = nowMoves().SimboloMonigote;
 		for (int i = 0; i < SizeI; ++i) {
 			for (int j = 0; j < SizeJ; ++j) {
 				switch (layOut[i][j]) {
@@ -448,7 +420,11 @@ void GameManager::GameStatus() {
 					break;
 				case'O': enti::cout << enti::Color::LIGHTCYAN << layOut[i][j];
 					break;
-				default: enti::cout << enti::Color::YELLOW << layOut[i][j];
+				default: 
+					if (layOut[i][j] == nowMoves().SimboloMonigote)
+						enti::cout << enti::Color::LIGHTMAGENTA << layOut[i][j];
+					else
+						enti::cout << enti::Color::YELLOW << layOut[i][j];
 					break;
 				}
 				enti::cout << ' ';
@@ -481,6 +457,7 @@ GameManager::GameManager(){
 
 void Play() {
 	bool byPass = false;
+	bool GAMEOVER = true;
 	GameManager* boss = new GameManager();
 	int x = 0;
 
@@ -491,17 +468,23 @@ void Play() {
 		}
 		std::cout << std::endl;
 	}
-	
 
 	do {
 		enti::InputKey localChar = enti::getInputKey();
 		if (localChar != enti::InputKey::NONE || byPass) {
+			GAMEOVER = true;
 			byPass = false;
+			for (int i = 0; i < boss->UnactiveTeam().size(); ++i) {
+				if (boss->UnactiveTeam().at(i).getHP() > 0)
+					GAMEOVER = true;
+			}
 			boss->ComandoPJ(localChar);
 			boss->GameStatus();
 			boss->Ataque();
+			
 			enti::cout << enti::cend;
-
+			if (GAMEOVER)
+				break;
 			if(boss->estado != ATQStatus::_NULL) {
 				do {
 					enti::InputKey localChar2 = enti::getInputKey();
@@ -528,10 +511,24 @@ void Play() {
 		}
 		else; //El enti::systemPause se come el inputKey que me interesa. Hacer esto es lo mismo pero sin que se coma el input.
 	} while (true);
+	if (GAMEOVER) {
+		boss->GameStatus();
+		int localWinner;
+		if (boss->Team1active) {
+			localWinner = 1;
+		}
+		else
+			localWinner = 2;
+		enti::cout << enti::Color::LIGHTGRAY << "CONGRATULATIONS! Team " << localWinner << " has won." << enti::endl;
+		enti::cout << "Play again? (Y/N) " << enti::cend;
+	}
 }
 
 
 void main()
 {
 	Play();
+	do {
+		enti::InputKey a = enti::getInputKey();
+	} while (true);
 }
