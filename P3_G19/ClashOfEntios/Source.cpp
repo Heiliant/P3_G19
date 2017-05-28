@@ -12,6 +12,9 @@ enum class direction
 {
 	_Up, _Down, _Left, _Right
 };
+
+enum class ATQStatus { _NULL, _CHOOSE, _ACT, _REPORT, _MAX };
+
 #include "Entios.h"
 
 #define ARRIBA enti::InputKey::w //este y todos los demas estaban asi w,W y abajo en la funcion MovimientoPlayer me daba error
@@ -32,135 +35,132 @@ enti::InputKey tecla;
 enum class Arma { SWORD, BOW };
 
 
-/*
 void GameManager::Ataque()
 {
-	if (ActiveTeam() == Equipo1)
+	switch (estado) {
+	case ATQStatus::_NULL:
+		break;
+	case ATQStatus::_CHOOSE: 
+		enti::cout << enti::Color::WHITE << "Enter the weapon you want to choose:" << enti::endl;
+		enti::cout << enti::Color::YELLOW << "1 - SWORD" << enti::endl;
+		enti::cout << enti::Color::YELLOW << "2 - BOW" << enti::endl;
+		break;
+	case ATQStatus::_ACT:
+		enti::cout << enti::Color::WHITE << "Enter the direction to attack:" << enti::endl;
+		enti::cout << enti::Color::YELLOW << "1 - UP" << enti::endl;
+		enti::cout << enti::Color::YELLOW << "2 - LEFT" << enti::endl;
+		enti::cout << enti::Color::YELLOW << "3 - DOWN" << enti::endl;
+		enti::cout << enti::Color::YELLOW << "4 - RIGHT" << enti::endl;
+		break;
+	case ATQStatus::_REPORT:
+		std::pair<int, int> localDir;//el primero son las Y y el segundo las X
+		switch (ATQKey) {
+		case enti::InputKey::NUM1: //up	
+			localDir.first = -1;
+			localDir.second = 0;
+			break;
+		case enti::InputKey::NUM2: //left
+			localDir.first = 0;
+			localDir.second = -1;
+			break;
+		case enti::InputKey::NUM3: //down
+			localDir.first = 1;
+			localDir.second = 0;
+			break;
+		case enti::InputKey::NUM4: //right
+			localDir.first = 0;
+			localDir.second = 1;
+			break;
+		}
+
+		int localMinRange;
+		int localMaxRange;
+		bool localCheck = false;
+		int localPos;
+		int localDmg;
+		actions--;
+		if (WeaponSel == enti::InputKey::NUM1) {
+			localMinRange = 1;
+			localMaxRange = 2;
+		}
+		else {
+			localMinRange = 3;
+			localMaxRange = 11;
+			nowMoves().flechas--;
+		}
+
+
+		for (int i = localMinRange; i < localMaxRange; ++i) {
+			if (layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX()+i*(localDir.second)] != 'X' && 
+				layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX() + i*(localDir.second)] != '.' &&
+				layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX() + i*(localDir.second)] != 'O' && 
+				layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX() + i*(localDir.second)] != ':') {
+						for (int j = 0; j < ActiveTeam().size(); ++j) {
+							if (UnactiveTeam().at(j).SimboloMonigote == layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX() + i*(localDir.second)]) {
+								localDmg = 11 - i;
+								UnactiveTeam().at(j).harm(localDmg);
+								localCheck = true;
+								localPos = j;
+								break;
+							}
+						}					
+			}
+		}
+		if (localCheck) {
+			enti::cout << enti::endl << enti::Color::WHITE << "You inflicted " << localDmg << " to entio " << localPos << enti::endl;
+			if(UnactiveTeam().at(localPos).getHP()>0)
+				enti::cout << enti::Color::LIGHTMAGENTA << "Entio " << localPos << " life " << UnactiveTeam().at(localPos).getHP() << enti::endl;
+			else {
+				enti::cout << enti::Color::LIGHTMAGENTA << "Entio killed! " << enti::endl;
+				delete  &UnactiveTeam().at(localPos);
+			}
+		}
+		else {
+			enti::cout << enti::endl << enti::Color::WHITE << "You missed!" << enti::endl;
+		}
+		break;
+	}
+
+	
+
+
+
+
+
+
+	/*
+	for (unsigned int i = 0; i < ActiveTeam().size(); i++)
 	{
-		for (int i = 0; i < Equipo1.size(); i++)
+		if (ActiveTeam().at(i).esControlado)
 		{
-			if (Equipo1.at(i).esControlado == true)
+			for (unsigned  int casillas = Equipo1.at(i).getX(); casillas < Equipo1.at(i).getX() + 10; casillas++)
 			{
-				for (int casillas = Equipo1.at(i).getX(); casillas < Equipo1.at(i).getX() + 10; casillas++)
+				if (layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'A' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'B' ||
+					layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'C' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'D'
+					|| layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'E' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'F') //casillas/casillas para ir aumentando de uno en uno
 				{
-					if (layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'A' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'B' ||
-						layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'C' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'D'
-						|| layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'E' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'F') //casillas/casillas para ir aumentando de uno en uno
+					for (int x = 0; x < Equipo2.size(); x++)
 					{
-						for (int x = 0; x < Equipo2.size(); x++)
-						{
-							if (Equipo2.at(x).getX() == Equipo1.at(i).getX() + (casillas / casillas))
-								Equipo2.at(x).vida -=
-						}
+						if (Equipo2.at(x).getX() == Equipo1.at(i).getX() + (casillas / casillas))
+							Equipo2.at(x).vida -= 20;
+						
 					}
 				}
 			}
 		}
-	}
+	}*/
 
 }
 
 
 void Muerte(std::vector <MonigotesJuego> Equipo1, std::vector <MonigotesJuego> Equipo2); //forward declaration
-void Ataque(int armusa, int &iterador, char &mapa, bool &controlador, int &ContadorAcciones, std::vector <MonigotesJuego> Equipo1, std::vector <MonigotesJuego> Equipo2); //forward declaration
-*/
 
-/*
-void ComandoPlayer(char &mapa) //funcion sobre lo que puede hacer el player y como segun esta el mapa variar? lo pasamos por referencia
-{								//esto no funcionar? bien porque debe llamarse dentro del gameloop, y en cada iteraci?n reseteamos todas estas variables
-bool ControlTurnos = false;
-int ContadorAcciones = 10;
-int iterador = 0;
-int arma=NULL;
-tecla = enti::getInputKey();
-bool adelante = true; //booleano para controlar que no cambie el turno del jugador si no se aprieta enter
-
-if (enti::getInputKey() == CAMBIAR_ENTIO && ControlTurnos == false && adelante==true) //si es falso el jugador que controle los monigotes que son letras (Equipo1) hara sus diez acciones,  si es true, el otro las har?
-{
-if (Equipo1.size() == iterador)
-{
-iterador = -1; //le meto que sea igual a -1 porque como luego lo primeor que hacemos es augmentarlo, valdra 0, y 0 es una posicion v?lida
-}
-iterador++; //lo augmentamos antes porque el primero ya estaba en true
-Equipo1[iterador - 1].esControlado = false;
-Equipo1[iterador].esControlado = true;
-ContadorAcciones++;
-
-}
-if (tecla!= CAMBIAR_ENTIO && ControlTurnos == false)
-{
-switch (tecla)
-{
-
-case ARRIBA:
-Equipo1[iterador].getX() -= 1;
-ContadorAcciones -= 1;
-break;
-
-case ABAJO:
-Equipo1[iterador].getX() += 1;
-ContadorAcciones -= 1;
-break;
-
-case DERECHA:
-Equipo1[iterador].getY() += 1;
-ContadorAcciones -= 1;
-break;
-
-case IZQUIERDA:
-Equipo1[iterador].getY() -= 1;
-ContadorAcciones -= 1;
-break;
-
-case REHACER:
-
-ContadorAcciones -= 1;
-break;
-
-case ATACAR:
-std::cout << "Which weapon do you want to attack with? \n0:Sword \n1:Bow ";
-std::cin >> arma;
-Ataque(arma, iterador, mapa, ControlTurnos, ContadorAcciones, Equipo1, Equipo2);//se llama a la funcion ataque
-
-case (ATRAS):
-break;
-
-
-}
-}
-
-if (ContadorAcciones == 0)
-{
-
-ContadorAcciones = 10;
-std::cout << "Press enter to continue"<<std::endl;
-ControlTurnos = true;
-adelante = false;
-
-if (tecla == CAMBIAR_ENTIO)
-{
-ContadorAcciones = 10;
-adelante = true;
-}
-else
-{
-std::cout << "Wrong key";
-}
-
-
-
-
-
-
-}
-
-
-}
-*/
 
 //Los setters son mejores que tener X e Y publicos porque as? nos aseguramos de que el PJ no pueda salir del mapa
 
 MonigotesJuego::MonigotesJuego(GameManager &boss) : manager(boss) {
+	CoordenadasX = 0;
+	CoordenadasY = 0;
 	vida = 10;
 	flechas = 10;
 	dead = false;
@@ -170,7 +170,12 @@ MonigotesJuego::MonigotesJuego(GameManager &boss) : manager(boss) {
 	hasPlayed = false;
 }
 
+MonigotesJuego::~MonigotesJuego() {
+		manager.layOut[CoordenadasY][CoordenadasX] = lastChar; //hay que arreglar esto
+}
+
 //Con los setters nos aseguramos de que no se sale del mapa. Despu?s en el gameManager haremos que no puedas meterte en la posici?n de otro entio.
+
 void MonigotesJuego::plusX() {
 	if (getX() < SizeJ - 1)
 		++CoordenadasX;
@@ -209,6 +214,23 @@ int MonigotesJuego::getY() {
 	return CoordenadasY;
 }
 
+void MonigotesJuego::setHP(int a) {
+	if (a > 0)
+		vida = a;
+}
+
+void MonigotesJuego::harm(int a) {
+	vida -= a;
+}
+
+void MonigotesJuego::kill() {
+	vida = 0;
+}
+
+int MonigotesJuego::getHP() {
+	return vida;
+}
+
 void GameManager::ComandoPJ(enti::InputKey pulsado) {
 		switch (pulsado) {
 		case CAMBIAR: CambiarEntio();
@@ -229,7 +251,7 @@ void GameManager::ComandoPJ(enti::InputKey pulsado) {
 			break;
 		case ATRAS:
 			break;
-		case ATACAR:
+		case ATACAR: estado = ATQStatus::_CHOOSE;
 			break;
 		}
 }
@@ -343,10 +365,10 @@ std::vector<MonigotesJuego>& GameManager::UnactiveTeam() {
 		return Equipo1;
 }
 
-char GameManager::nowMoves() {
+MonigotesJuego& GameManager::nowMoves() {
 	for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
 		if (ActiveTeam().at(i).esControlado)
-			return ActiveTeam().at(i).SimboloMonigote;
+			return ActiveTeam().at(i);
 	}
 }
 
@@ -435,10 +457,9 @@ void GameManager::GameStatus() {
 		}
 
 		enti::cout << enti::Color::YELLOW << "Remaining Movements: " << enti::Color::LIGHTCYAN << actions << enti::endl;
-		enti::cout << enti::Color::YELLOW << "Now moves: " << enti::Color::LIGHTCYAN << nowMoves() << enti::endl;
+		enti::cout << enti::Color::YELLOW << "Now moves: " << enti::Color::LIGHTCYAN << nowMoves().SimboloMonigote << enti::endl;
 		if (actions==0)
 			enti::cout << enti::endl << enti::Color::LIGHTMAGENTA << "Press ENTER to end your turn!" << enti::endl;
-		enti::cout << enti::cend;
 	}
 }
 
@@ -455,9 +476,11 @@ GameManager::GameManager(){
 	Team1active = true;
 	Team2active = false;
 	actions = 10;
+	estado = ATQStatus::_NULL;
 }
 
 void Play() {
+	bool byPass = false;
 	GameManager* boss = new GameManager();
 	int x = 0;
 
@@ -468,12 +491,40 @@ void Play() {
 		}
 		std::cout << std::endl;
 	}
+	
 
 	do {
-		enti::InputKey localChar = enti::getInputKey();		
-		if (localChar != enti::InputKey::NONE) {
+		enti::InputKey localChar = enti::getInputKey();
+		if (localChar != enti::InputKey::NONE || byPass) {
+			byPass = false;
 			boss->ComandoPJ(localChar);
 			boss->GameStatus();
+			boss->Ataque();
+			enti::cout << enti::cend;
+
+			if(boss->estado != ATQStatus::_NULL) {
+				do {
+					enti::InputKey localChar2 = enti::getInputKey();
+					if ((boss->estado == ATQStatus::_CHOOSE) && (localChar2 == enti::InputKey::NUM1 || localChar2 == enti::InputKey::NUM2)) {
+						boss->WeaponSel = localChar2;
+						boss->estado = ATQStatus::_ACT;
+						byPass = true;
+						break;
+					}
+					else if ((boss->estado == ATQStatus::_ACT) && (localChar2 == enti::InputKey::NUM1 || localChar2 == enti::InputKey::NUM2 ||
+						localChar2 == enti::InputKey::NUM3 || localChar2 == enti::InputKey::NUM4)) {
+						boss->estado = ATQStatus::_REPORT;
+						boss->ATQKey = localChar2;
+						byPass = true;
+						break;
+					}
+					else if (localChar2 == enti::InputKey::NONE);
+					else {
+						boss->estado = ATQStatus::_NULL;
+						break;
+					}
+				} while (true);
+			}
 		}
 		else; //El enti::systemPause se come el inputKey que me interesa. Hacer esto es lo mismo pero sin que se coma el input.
 	} while (true);

@@ -3,7 +3,7 @@
 class MonigotesJuego;
 
 class GameManager { //el gamemanager controlará, básicamente, todo. A quien le toca jugar, donde está cada entio, 
-					//cuando alguien puede moverse, las acciones restantes
+					//cuando alguien puede moverse, las acciones restantes...
 private:
 	std::vector<MonigotesJuego> Equipo1;
 	std::vector<MonigotesJuego> Equipo2;
@@ -16,7 +16,7 @@ public:
 	char(*layOut)[SizeJ];
 	std::vector<MonigotesJuego>& ActiveTeam();
 	std::vector<MonigotesJuego>& UnactiveTeam();
-	char nowMoves();
+	MonigotesJuego& nowMoves();
 	MonigotesJuego& setAndFindStress();
 	bool ActiveTeamIsDone();
 	void Equipo1SetState(bool a);
@@ -26,6 +26,9 @@ public:
 	void GameStatus();
 	void CambiarEntio();
 
+	ATQStatus estado;
+	enti::InputKey WeaponSel;
+	enti::InputKey ATQKey;
 	void Ataque();
 	GameManager();
 };
@@ -34,10 +37,8 @@ class MonigotesJuego {
 private:
 	int CoordenadasX;
 	int CoordenadasY;
-
+	int vida;
 public:
-	int vida;                             //todos los atributos que tendran los monigotes que se mueven en el juego
-										  //Arma Weapon[DosArmas];  //diria que nos podemos ahorrar esto, ya que los jugadores siempre llevarán sus armas y no pueden perderlas/ cambiarlas
 	int flechas;
 	//int Damage;				//creo que nos lo podemos ahorrar ya que el damage depende del tipo de ataque, no del PJ
 	char SimboloMonigote;
@@ -51,10 +52,8 @@ public:
 	bool hasPlayed;
 	char lastChar;
 	GameManager& manager;
-
-
 	MonigotesJuego(GameManager &boss);//constructor de los monigotes
-
+	~MonigotesJuego();
 
 	void plusX();
 	void minusX();
@@ -64,6 +63,10 @@ public:
 	void setY(int a);
 	int getX();
 	int getY();
+	void setHP(int a);
+	void kill();
+	int getHP();
+	void harm(int a);
 };
 
 
