@@ -140,7 +140,7 @@ void MonigotesJuego::plusX() {
 }
 
 void MonigotesJuego::plusY() {
-	if (getY() < SizeI - 1)
+	if (CoordenadasY>0)
 		--CoordenadasY;
 }
 
@@ -150,7 +150,7 @@ void MonigotesJuego::minusX() {
 }
 
 void MonigotesJuego::minusY() {
-	if (getY() > 0)
+	if (CoordenadasY < SizeI-1)
 		++CoordenadasY;
 }
 
@@ -302,23 +302,34 @@ void GameManager::Equipo2SetState(bool a) {
 void GameManager::submitMove(direction vector) {
 	for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
 		if (ActiveTeam().at(i).esControlado) {
-			layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
 			switch (vector) {
 			case direction::_Down:
-				ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY()+1][ActiveTeam().at(i).getX()];
-				ActiveTeam().at(i).minusY();
+				if (layOut[ActiveTeam().at(i).getY() + 1][ActiveTeam().at(i).getX()] == '.' || layOut[ActiveTeam().at(i).getY() + 1][ActiveTeam().at(i).getX()] == ':') {
+					layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
+					ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY() + 1][ActiveTeam().at(i).getX()];
+					ActiveTeam().at(i).minusY();
+				}
 				break;
 			case direction::_Left:
-				ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()-1];
-				ActiveTeam().at(i).minusX();
+				if (layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX() - 1] == '.' || layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX() - 1] == ':') {
+					layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
+					ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX() - 1];
+					ActiveTeam().at(i).minusX();
+				}
 				break;
 			case direction::_Right:
-				ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()+1];
-				ActiveTeam().at(i).plusX();
+				if (layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX() + 1] == '.' || layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX() + 1] == ':') {
+					layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
+					ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX() + 1];
+					ActiveTeam().at(i).plusX();
+				}
 				break;
 			case direction::_Up:
-				ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY() - 1][ActiveTeam().at(i).getX()];
-				ActiveTeam().at(i).plusY();
+				if (layOut[ActiveTeam().at(i).getY() - 1][ActiveTeam().at(i).getX()] == '.' || layOut[ActiveTeam().at(i).getY() - 1][ActiveTeam().at(i).getX()] == ':') {
+					layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
+					ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY() - 1][ActiveTeam().at(i).getX()];
+					ActiveTeam().at(i).plusY();
+				}
 				break;
 			}
 			layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).SimboloMonigote;
