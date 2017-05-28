@@ -237,8 +237,10 @@ void GameManager::CambiarEntio() {
 			else
 				ActiveTeam().at(i).turnsPlayed = 0;
 		}
-			std::queue <enti::InputKey> empty;
-			std::swap(comandos, empty);
+		/*
+		while (comandos.size() != 0) {
+			comandos.pop();
+		}*/
 			Equipo1SetState(Team2active);
 			setAndFindStress();
 			actions = 10;
