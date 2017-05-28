@@ -17,6 +17,7 @@ public:
 	std::vector<MonigotesJuego>& ActiveTeam();
 	std::vector<MonigotesJuego>& UnactiveTeam();
 	char nowMoves();
+	MonigotesJuego& setAndFindStress();
 	bool ActiveTeamIsDone();
 	void Equipo1SetState(bool a);
 	void Equipo2SetState(bool a);
@@ -26,7 +27,7 @@ public:
 	void CambiarEntio();
 
 	void Ataque();
-	GameManager();
+	GameManager(std::);
 };
 
 class MonigotesJuego {
@@ -45,7 +46,9 @@ public:
 	//char TerrenoAnterior; //tomara el valor del char que corresponde al terreno donde esta el jugador, para cuando este se mueva vuelva a pintar el char del terreno donde estaba
 	//diria que es más conveniente que sea el mapa quien actualiza lo que se dibuja en cada hueco del mismo. De modo que el mapa
 	//sepa donde están los players y pinte el contenido del array y "encima" de esta, el simbolo de los PJ.
-	int fatiga;
+	int movesAct;
+	int turnsPlayed;
+	bool hasPlayed;
 	char lastChar;
 	GameManager& manager;
 

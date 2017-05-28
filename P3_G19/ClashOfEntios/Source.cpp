@@ -5,6 +5,7 @@
 #include <vector>
 #include <stack>
 #include <algorithm>
+#include <queue>
 const int SizeJ = 74;
 const int SizeI = 36;
 enum class direction
@@ -135,7 +136,9 @@ MonigotesJuego::MonigotesJuego(GameManager &boss) : manager(boss) {
 	flechas = 10;
 	dead = false;
 	esControlado = false;
-	fatiga = 0;
+	turnsPlayed=0;
+	movesAct = 0;
+	hasPlayed = false;
 }
 
 //Con los setters nos aseguramos de que no se sale del mapa. Despu?s en el gameManager haremos que no puedas meterte en la posici?n de otro entio.
@@ -202,20 +205,43 @@ void GameManager::ComandoPJ(enti::InputKey pulsado) {
 		}
 }
 
-void GameManager::CambiarEntio() //recorre el team activo. Setea el esControlado 
-{															//de todos los mu?ecos a falso y busca al menos fatigado y lo pone en true
+MonigotesJuego& GameManager::setAndFindStress() {
 	int ansposition = 0;
-	int minimalStress = ActiveTeam().at(0).fatiga;
+	int minimalStress = ActiveTeam().at(0).turnsPlayed + ActiveTeam().at(0).movesAct;
 
-	for (unsigned int i = 1; i < ActiveTeam().size(); ++i) {
-		if (ActiveTeam().at(i).fatiga < minimalStress) {
+	for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
+		if ((ActiveTeam().at(i).turnsPlayed + ActiveTeam().at(i).movesAct) < minimalStress) {
 			ansposition = i;
-			minimalStress = ActiveTeam().at(i).fatiga;
-			ActiveTeam().at(i).esControlado = false;
+			minimalStress = (ActiveTeam().at(i).turnsPlayed + ActiveTeam().at(i).movesAct);
 		}
+		if (ActiveTeam().at(i).esControlado)
+			ActiveTeam().at(i).esControlado = false;
 	}
 
-	ActiveTeam().at(ansposition).esControlado = true;;
+	ActiveTeam().at(ansposition).esControlado = true;
+	return ActiveTeam().at(ansposition);
+}
+
+void GameManager::CambiarEntio() {
+
+	if (actions > 0) {//si al equipo activo le quedan acciones, busca al entio menos fatigado y le da el control, a la vez que se lo quita al entio activo.
+		//es posible que el entio al que se le da el control sea el entio que estaba activo en un principio.
+		setAndFindStress();
+		actions--;
+	}
+	else {
+		for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
+			ActiveTeam().at(i).movesAct = 0;
+			if (ActiveTeam().at(i).hasPlayed)
+				ActiveTeam().at(i).turnsPlayed++;
+			else
+				ActiveTeam().at(i).turnsPlayed = 0;
+		}
+			Equipo1SetState(Team2active);
+			setAndFindStress();
+			actions = 10;
+			
+	}
 }
 
 
@@ -289,14 +315,14 @@ std::vector<MonigotesJuego>& GameManager::UnactiveTeam() {
 }
 
 char GameManager::nowMoves() {
-	for (int i = 0; i < ActiveTeam().size(); ++i) {
+	for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
 		if (ActiveTeam().at(i).esControlado)
 			return ActiveTeam().at(i).SimboloMonigote;
 	}
 }
 
 bool GameManager::ActiveTeamIsDone() {
-	return actions <= 0;
+	return actions < 0;
 }
 
 void GameManager::Equipo1SetState(bool a) {
@@ -346,8 +372,10 @@ void GameManager::submitMove(direction vector) {
 						actions--;
 					}
 					break;
-				}
+				}				
 				layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).SimboloMonigote;
+				ActiveTeam().at(i).movesAct++;
+				ActiveTeam().at(i).hasPlayed = true;
 				break;
 			}
 		}		
@@ -356,28 +384,33 @@ void GameManager::submitMove(direction vector) {
 }
 
 void GameManager::GameStatus() {
-	system("cls");
-	for (int i = 0; i < SizeI; ++i) {
-		for (int j = 0; j < SizeJ; ++j) {
-			switch (layOut[i][j]) {
-			case 'X': enti::cout << enti::Color::LIGHTRED << layOut[i][j];
-				break;
-			case '.': enti::cout << enti::Color::WHITE << layOut[i][j];
-				break;
-			case':': enti::cout << enti::Color::LIGHTGREEN << layOut[i][j];
-				break;
-			case'O': enti::cout << enti::Color::LIGHTCYAN << layOut[i][j];
-				break;
-			default: enti::cout << enti::Color::YELLOW << layOut[i][j];
-				break;
+	if (!ActiveTeamIsDone()) {
+		system("cls");
+		for (int i = 0; i < SizeI; ++i) {
+			for (int j = 0; j < SizeJ; ++j) {
+				switch (layOut[i][j]) {
+				case 'X': enti::cout << enti::Color::LIGHTRED << layOut[i][j];
+					break;
+				case '.': enti::cout << enti::Color::WHITE << layOut[i][j];
+					break;
+				case':': enti::cout << enti::Color::LIGHTGREEN << layOut[i][j];
+					break;
+				case'O': enti::cout << enti::Color::LIGHTCYAN << layOut[i][j];
+					break;
+				default: enti::cout << enti::Color::YELLOW << layOut[i][j];
+					break;
+				}
+				enti::cout << ' ';
 			}
-			enti::cout << ' ';
+			enti::cout << enti::endl;
 		}
-		enti::cout << enti::endl;
-	}
 
-	enti::cout << enti::Color::YELLOW << "Remaining Movements: " << enti::Color::LIGHTCYAN << actions << enti::endl;
-	enti::cout << enti::Color::YELLOW << "Now moves: " << enti::Color::LIGHTCYAN << nowMoves() << enti ::cend;
+		enti::cout << enti::Color::YELLOW << "Remaining Movements: " << enti::Color::LIGHTCYAN << actions << enti::endl;
+		enti::cout << enti::Color::YELLOW << "Now moves: " << enti::Color::LIGHTCYAN << nowMoves() << enti::endl;
+		if (actions==0)
+			enti::cout << enti::endl << enti::Color::LIGHTMAGENTA << "Press ENTER to end your turn!" << enti::endl;
+		enti::cout << enti::cend;
+	}
 }
 
 GameManager::GameManager() {
@@ -426,7 +459,7 @@ Equipo2.at(x).vida-=
 */
 
 void Play() {
-
+	std::queue <enti::InputKey> comandos;
 	GameManager* boss = new GameManager();
 	int x = 0;
 
@@ -439,10 +472,12 @@ void Play() {
 	}
 
 	do {
-		enti::InputKey localChar = enti::getInputKey();
+		enti::InputKey localChar = enti::getInputKey();		
 		if (localChar != enti::InputKey::NONE) {
-			boss->ComandoPJ(localChar);
+			comandos.push(localChar);
+			boss->ComandoPJ(comandos.front());
 			boss->GameStatus();
+			comandos.pop();
 		}
 		else; //El enti::systemPause se come el inputKey que me interesa. Hacer esto es lo mismo pero sin que se coma el input.
 	} while (true);
