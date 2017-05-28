@@ -22,6 +22,7 @@ public:
 	void submitMove(direction vector);
 	void ComandoPJ(enti::InputKey pulsado);
 	void CambiarEntio();
+
 	void Ataque();
 	GameManager();
 };
@@ -33,7 +34,7 @@ private:
 
 public:
 	int vida;                             //todos los atributos que tendran los monigotes que se mueven en el juego
-	//Arma Weapon[DosArmas];  //diria que nos podemos ahorrar esto, ya que los jugadores siempre llevarán sus armas y no pueden perderlas/ cambiarlas
+										  //Arma Weapon[DosArmas];  //diria que nos podemos ahorrar esto, ya que los jugadores siempre llevarán sus armas y no pueden perderlas/ cambiarlas
 	int flechas;
 	//int Damage;				//creo que nos lo podemos ahorrar ya que el damage depende del tipo de ataque, no del PJ
 	char SimboloMonigote;
@@ -69,4 +70,4 @@ public:
 
 	char mapa[SizeI][SizeJ];
 	Map(std::vector<MonigotesJuego> &Team1, std::vector<MonigotesJuego> &Team2);
-};
+}; 

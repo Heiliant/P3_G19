@@ -22,14 +22,14 @@ namespace enti
 			csbiInfo.srWindow.Right - csbiInfo.srWindow.Left + 1,
 			csbiInfo.srWindow.Bottom - csbiInfo.srWindow.Top + 1
 		}); // Disable vertical scrollbar
-		maxRows = csbiInfo.srWindow.Bottom;
-		maxCols = csbiInfo.srWindow.Right;
+		maxRows = csbiInfo.srWindow.Bottom - 5;
+		maxCols = csbiInfo.srWindow.Right - 5;
 		data = new CharInfo[maxRows*maxCols];
 	}
 
 	Renderer::~Renderer() { delete[] data; }
 
-	inline /*constexpr*/ void fill(CharInfo *first, const CharInfo *last, const CharInfo &value) {  while (first != last) *first++ = value; }
+	inline void fill(CharInfo *first, const CharInfo *last, const CharInfo &value) {  while (first != last) *first++ = value; }
 
 	const R & operator<<(const R & r, const Endl & endl)
 	{
