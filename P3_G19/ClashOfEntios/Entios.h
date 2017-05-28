@@ -16,6 +16,7 @@ public:
 	char(*layOut)[SizeJ];
 	std::vector<MonigotesJuego>& ActiveTeam();
 	std::vector<MonigotesJuego>& UnactiveTeam();
+	char nowMoves();
 	bool ActiveTeamIsDone();
 	void Equipo1SetState(bool a);
 	void Equipo2SetState(bool a);

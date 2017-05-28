@@ -294,6 +294,13 @@ std::vector<MonigotesJuego>& GameManager::UnactiveTeam() {
 		return Equipo1;
 }
 
+char GameManager::nowMoves() {
+	for (int i = 0; i < ActiveTeam().size(); ++i) {
+		if (ActiveTeam().at(i).esControlado)
+			return ActiveTeam().at(i).SimboloMonigote;
+	}
+}
+
 bool GameManager::ActiveTeamIsDone() {
 	return actions <= 0;
 }
@@ -369,7 +376,8 @@ void GameManager::submitMove(direction vector) {
 }
 
 void GameManager::GameStatus() {
-	enti::cout << enti::Color::YELLOW << "Remaining Movements: " << enti::Color::LIGHTCYAN << actions << enti::cend;
+	enti::cout << enti::Color::YELLOW << "Remaining Movements: " << enti::Color::LIGHTCYAN << actions << enti::endl;
+	enti::cout << enti::Color::YELLOW << "Now moves: " << enti::Color::LIGHTCYAN << nowMoves() << enti ::cend;
 }
 
 GameManager::GameManager() {
