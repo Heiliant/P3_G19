@@ -14,11 +14,16 @@ enum class direction
 #include "Entios.h"
 
 #define ARRIBA enti::InputKey::w //este y todos los demas estaban asi w,W y abajo en la funcion MovimientoPlayer me daba error
-#define ABAJO enti::InputKey::s // nos faltar? meter las letras en mayus. El define no creo que le guste mucho a la tona, ya que es de c xD.
+#define ARRIBAM enti::InputKey::W
+#define ABAJO enti::InputKey::s 
+#define ABAJOM enti::InputKey::S
 #define DERECHA enti::InputKey::d
+#define DERECHAM enti::InputKey::D
 #define IZQUIERDA enti::InputKey::a
+#define IZQUIERDAM enti::InputKey::A
 #define ATACAR enti::InputKey::SPACEBAR
 #define REHACER enti::InputKey::z
+#define REHACERM enti::InputKey::Z
 #define CAMBIAR enti::InputKey::ENTER
 #define ATRAS enti::InputKey::ESC
 
@@ -178,12 +183,16 @@ void GameManager::ComandoPJ(enti::InputKey pulsado) {
 		switch (pulsado) {
 		case CAMBIAR: CambiarEntio();
 			break;
+		case ARRIBAM:
 		case ARRIBA: submitMove(direction::_Up);
 			break;
+		case ABAJOM:
 		case ABAJO: submitMove(direction::_Down);
 			break;
+		case DERECHAM:
 		case DERECHA: submitMove(direction::_Right);
 			break;
+		case IZQUIERDAM:
 		case IZQUIERDA: submitMove(direction::_Left);
 			break;
 		case REHACER:
@@ -337,13 +346,6 @@ void GameManager::submitMove(direction vector) {
 		}
 	}
 	system("cls");
-	/*
-	for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
-		layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).SimboloMonigote;
-	}
-	for (unsigned int i = 0; i < UnactiveTeam().size(); ++i) {
-		layOut[UnactiveTeam().at(i).getY()][UnactiveTeam().at(i).getX()] = UnactiveTeam().at(i).SimboloMonigote;
-	}*/
 
 	for (int i = 0; i < SizeI; ++i) {
 		for (int j = 0; j < SizeJ; ++j) {
@@ -358,14 +360,16 @@ void GameManager::submitMove(direction vector) {
 				break;
 			default: enti::cout << enti::Color::YELLOW << layOut[i][j];
 				break;
-			}//Primer [] corresponde a las Y, el segundo [] a las X.
+			}
 			enti::cout << ' ';
 		}
 		enti::cout << enti::endl;
 	}
-	enti::cout << enti::cend;
-	//limpiar pantalla y volver a pintar el mapa
+	//enti::cout << enti::cend;
+}
 
+void GameManager::GameStatus() {
+	enti::cout << enti::Color::YELLOW << "Remaining Movements: " << enti::Color::LIGHTCYAN << actions << enti::cend;
 }
 
 GameManager::GameManager() {
@@ -430,6 +434,7 @@ void Play() {
 		enti::InputKey localChar = enti::getInputKey();
 		if (localChar != enti::InputKey::NONE) {
 			boss->ComandoPJ(localChar);
+			boss->GameStatus();
 		}
 		else; //El enti::systemPause se come el inputKey que me interesa. Hacer esto es lo mismo pero sin que se coma el input.
 	} while (true);

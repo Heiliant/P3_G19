@@ -21,6 +21,7 @@ public:
 	void Equipo2SetState(bool a);
 	void submitMove(direction vector);
 	void ComandoPJ(enti::InputKey pulsado);
+	void GameStatus();
 	void CambiarEntio();
 
 	void Ataque();
