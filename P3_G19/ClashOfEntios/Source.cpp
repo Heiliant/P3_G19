@@ -302,38 +302,57 @@ void GameManager::Equipo2SetState(bool a) {
 void GameManager::submitMove(direction vector) {
 	for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
 		if (ActiveTeam().at(i).esControlado) {
+			layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
 			switch (vector) {
 			case direction::_Down:
+				ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY()+1][ActiveTeam().at(i).getX()];
 				ActiveTeam().at(i).minusY();
 				break;
 			case direction::_Left:
+				ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()-1];
 				ActiveTeam().at(i).minusX();
 				break;
 			case direction::_Right:
+				ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()+1];
 				ActiveTeam().at(i).plusX();
 				break;
 			case direction::_Up:
+				ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY() - 1][ActiveTeam().at(i).getX()];
 				ActiveTeam().at(i).plusY();
 				break;
 			}
+			layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).SimboloMonigote;
+			break;
 		}
 	}
 	system("cls");
-
+	/*
 	for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
 		layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).SimboloMonigote;
 	}
 	for (unsigned int i = 0; i < UnactiveTeam().size(); ++i) {
 		layOut[UnactiveTeam().at(i).getY()][UnactiveTeam().at(i).getX()] = UnactiveTeam().at(i).SimboloMonigote;
-	}
+	}*/
 
 	for (int i = 0; i < SizeI; ++i) {
 		for (int j = 0; j < SizeJ; ++j) {
-			std::cout << layOut[i][j]; //Primer [] corresponde a las Y, el segundo [] a las X.
+			switch (layOut[i][j]) {
+			case 'X': enti::cout << enti::Color::LIGHTRED << layOut[i][j];
+				break;
+			case '.': enti::cout << enti::Color::WHITE << layOut[i][j];
+				break;
+			case':': enti::cout << enti::Color::LIGHTGREEN << layOut[i][j];
+				break;
+			case'O': enti::cout << enti::Color::LIGHTCYAN << layOut[i][j];
+				break;
+			default: enti::cout << enti::Color::YELLOW << layOut[i][j];
+				break;
+			}//Primer [] corresponde a las Y, el segundo [] a las X.
+			enti::cout << ' ';
 		}
-		std::cout << std::endl;
+		enti::cout << enti::endl;
 	}
-
+	enti::cout << enti::cend;
 	//limpiar pantalla y volver a pintar el mapa
 
 }
