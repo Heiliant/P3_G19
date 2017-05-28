@@ -31,7 +31,36 @@ enum class direction
 enti::InputKey tecla;
 enum class Arma { SWORD, BOW };
 
+
 /*
+void GameManager::Ataque()
+{
+	if (ActiveTeam() == Equipo1)
+	{
+		for (int i = 0; i < Equipo1.size(); i++)
+		{
+			if (Equipo1.at(i).esControlado == true)
+			{
+				for (int casillas = Equipo1.at(i).getX(); casillas < Equipo1.at(i).getX() + 10; casillas++)
+				{
+					if (layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'A' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'B' ||
+						layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'C' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'D'
+						|| layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'E' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'F') //casillas/casillas para ir aumentando de uno en uno
+					{
+						for (int x = 0; x < Equipo2.size(); x++)
+						{
+							if (Equipo2.at(x).getX() == Equipo1.at(i).getX() + (casillas / casillas))
+								Equipo2.at(x).vida -=
+						}
+					}
+				}
+			}
+		}
+	}
+
+}
+
+
 void Muerte(std::vector <MonigotesJuego> Equipo1, std::vector <MonigotesJuego> Equipo2); //forward declaration
 void Ataque(int armusa, int &iterador, char &mapa, bool &controlador, int &ContadorAcciones, std::vector <MonigotesJuego> Equipo1, std::vector <MonigotesJuego> Equipo2); //forward declaration
 */
@@ -427,36 +456,6 @@ GameManager::GameManager(){
 	Team2active = false;
 	actions = 10;
 }
-/*
-
-void GameManager::Ataque()
-{
-if (ActiveTeam()==Equipo1)
-{
-for (int i = 0; i < Equipo1.size(); i++)
-{
-if (Equipo1.at(i).esControlado == true)
-{
-for (int casillas = Equipo1.at(i).getX(); casillas < Equipo1.at(i).getX() + 10; casillas++)
-{
-if (layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()]=='A' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'B' ||
-layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'C' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'D'
-|| layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'E' || layOut[Equipo1.at(i).getX() + (casillas / casillas)][Equipo1.at(i).getY()] == 'F') //casillas/casillas para ir aumentando de uno en uno
-{
-for (int x = 0; x < Equipo2.size(); x++)
-{
-if (Equipo2.at(x).getX()== Equipo1.at(i).getX() + (casillas / casillas))
-Equipo2.at(x).vida-=
-}
-}
-}
-}
-}
-}
-
-}
-
-*/
 
 void Play() {
 	GameManager* boss = new GameManager();
