@@ -237,10 +237,6 @@ void GameManager::CambiarEntio() {
 			else
 				ActiveTeam().at(i).turnsPlayed = 0;
 		}
-		/*
-		while (comandos.size() != 0) {
-			comandos.pop();
-		}*/
 			Equipo1SetState(Team2active);
 			setAndFindStress();
 			actions = 10;
@@ -340,7 +336,7 @@ void GameManager::Equipo2SetState(bool a) {
 }
 
 void GameManager::submitMove(direction vector) {
-	if (!ActiveTeamIsDone()) {
+	if (actions!=0) {
 		for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
 			if (ActiveTeam().at(i).esControlado) {
 				switch (vector) {
@@ -417,7 +413,7 @@ void GameManager::GameStatus() {
 	}
 }
 
-GameManager::GameManager(std::queue<enti::InputKey> Input) : comandos(Input){
+GameManager::GameManager(){
 	for (int i = 0; i < 6; ++i) {
 		Equipo1.push_back(MonigotesJuego(*this));
 	}
@@ -463,8 +459,7 @@ Equipo2.at(x).vida-=
 */
 
 void Play() {
-	std::queue <enti::InputKey> comandos;
-	GameManager* boss = new GameManager(comandos);
+	GameManager* boss = new GameManager();
 	int x = 0;
 
 	for (int i = 0; i < SizeI; ++i) {
@@ -478,10 +473,8 @@ void Play() {
 	do {
 		enti::InputKey localChar = enti::getInputKey();		
 		if (localChar != enti::InputKey::NONE) {
-			comandos.push(localChar);
-			boss->ComandoPJ(comandos.front());
+			boss->ComandoPJ(localChar);
 			boss->GameStatus();
-			comandos.pop();
 		}
 		else; //El enti::systemPause se come el inputKey que me interesa. Hacer esto es lo mismo pero sin que se coma el input.
 	} while (true);

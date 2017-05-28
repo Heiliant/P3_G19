@@ -10,7 +10,6 @@ private:
 	bool Team1active;
 	bool Team2active;
 	int actions;
-	std::queue<enti::InputKey>& comandos;
 
 public:
 	//std::stack<GameManager> historial;
@@ -28,7 +27,7 @@ public:
 	void CambiarEntio();
 
 	void Ataque();
-	GameManager(std::queue<enti::InputKey> Input);
+	GameManager();
 };
 
 class MonigotesJuego {
