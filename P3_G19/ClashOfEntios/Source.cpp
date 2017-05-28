@@ -7,18 +7,22 @@
 #include <algorithm>
 #include <queue>
 #include <limits>
+
 const int SizeJ = 74;
 const int SizeI = 36;
+
 enum class direction
 {
 	_Up, _Down, _Left, _Right
-};
+}; 
+//este enum class lo usamos para pasar un parámetro a la función de movimiento y facilitar la lectura del código
 
 enum class ATQStatus { _NULL, _CHOOSE, _ACT, _REPORT, _MAX };
+//y este otro para gestionar el estado en que se encuentra el ataque de un entio
 
 #include "Entios.h"
 
-#define ARRIBA enti::InputKey::w //este y todos los demas estaban asi w,W y abajo en la funcion MovimientoPlayer me daba error
+#define ARRIBA enti::InputKey::w  //defines para simplificar el código
 #define ARRIBAM enti::InputKey::W
 #define ABAJO enti::InputKey::s 
 #define ABAJOM enti::InputKey::S
@@ -32,94 +36,7 @@ enum class ATQStatus { _NULL, _CHOOSE, _ACT, _REPORT, _MAX };
 #define CAMBIAR enti::InputKey::ENTER
 #define SALIR enti::InputKey::ESC
 
-void GameManager::Ataque()
-{
-	switch (estado) {
-	case ATQStatus::_NULL:
-		break;
-	case ATQStatus::_CHOOSE: 
-		enti::cout << enti::Color::WHITE << "Enter the weapon you want to choose:" << enti::endl;
-		enti::cout << enti::Color::YELLOW << "1 - SWORD" << enti::endl;
-		enti::cout << enti::Color::YELLOW << "2 - BOW" << enti::endl;
-		break;
-	case ATQStatus::_ACT:
-		enti::cout << enti::Color::WHITE << "Enter the direction to attack:" << enti::endl;
-		enti::cout << enti::Color::YELLOW << "1 - UP" << enti::endl;
-		enti::cout << enti::Color::YELLOW << "2 - LEFT" << enti::endl;
-		enti::cout << enti::Color::YELLOW << "3 - DOWN" << enti::endl;
-		enti::cout << enti::Color::YELLOW << "4 - RIGHT" << enti::endl;
-		break;
-	case ATQStatus::_REPORT:
-		historial.push(std::pair<std::vector<MonigotesJuego>, std::vector<MonigotesJuego>>{Equipo1, Equipo2});
-		std::pair<int, int> localDir;//el primero son las Y y el segundo las X
-		switch (ATQKey) {
-		case enti::InputKey::NUM1: //up	
-			localDir.first = -1;
-			localDir.second = 0;
-			break;
-		case enti::InputKey::NUM2: //left
-			localDir.first = 0;
-			localDir.second = -1;
-			break;
-		case enti::InputKey::NUM3: //down
-			localDir.first = 1;
-			localDir.second = 0;
-			break;
-		case enti::InputKey::NUM4: //right
-			localDir.first = 0;
-			localDir.second = 1;
-			break;
-		}
-
-		int localMinRange;
-		int localMaxRange;
-		bool localCheck = false;
-		int localPos;
-		int localDmg;
-		actions--;
-		if (WeaponSel == enti::InputKey::NUM1) {
-			localMinRange = 1;
-			localMaxRange = 2;
-		}
-		else {
-			localMinRange = 3;
-			localMaxRange = 11;
-			nowMoves().flechas--;
-		}
-
-
-		for (int i = localMinRange; i < localMaxRange; ++i) {
-			if (layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX()+i*(localDir.second)] != 'X' && 
-				layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX() + i*(localDir.second)] != '.' &&
-				layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX() + i*(localDir.second)] != 'O' && 
-				layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX() + i*(localDir.second)] != ':') {
-						for (int j = 0; j < ActiveTeam().size(); ++j) {
-							if (UnactiveTeam().at(j).SimboloMonigote == layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX() + i*(localDir.second)]) {
-								localDmg = 11 - i;
-								UnactiveTeam().at(j).harm(localDmg);
-								localCheck = true;
-								localPos = j;
-								break;
-							}
-						}					
-			}
-		}
-		if (localCheck) {
-			enti::cout << enti::endl << enti::Color::WHITE << "You inflicted " << localDmg << " to entio " << localPos << enti::endl;
-			if(UnactiveTeam().at(localPos).getHP()>0)
-				enti::cout << enti::Color::LIGHTMAGENTA << "Entio " << localPos << " life " << UnactiveTeam().at(localPos).getHP() << enti::endl;
-			else {
-				enti::cout << enti::Color::LIGHTMAGENTA << "Entio killed! " << enti::endl;
-				UnactiveTeam().at(localPos).goToSleep();
-			}
-		}
-		else {
-			enti::cout << enti::endl << enti::Color::WHITE << "You missed!" << enti::endl;
-		}
-		break;
-	}
-
-}
+//Métodos de MonigotesJuego
 
 MonigotesJuego::MonigotesJuego(GameManager &boss) : manager(boss) {
 	vida = 10;
@@ -129,8 +46,6 @@ MonigotesJuego::MonigotesJuego(GameManager &boss) : manager(boss) {
 	movesAct = 0;
 	hasPlayed = false;
 }
-
-//Con los setters nos aseguramos de que no se sale del mapa. Despu?s en el gameManager haremos que no puedas meterte en la posici?n de otro entio.
 
 void MonigotesJuego::plusX() {
 	if (getX() < SizeJ - 1)
@@ -187,86 +102,34 @@ int MonigotesJuego::getHP() {
 	return vida;
 }
 
-
-void MonigotesJuego::goToSleep() {
+void MonigotesJuego::goToSleep() { //este método lo hemos usado para "deshabilitar" a los entios caídos en combate. No hemos hecho delete de los entios
+									//ya que la implementación del destructor nos causaba ciertos problemas.
 	SimboloMonigote = lastChar;
 	manager.layOut[CoordenadasY][CoordenadasX] = lastChar;
-	for (int i = 0; i < manager.UnactiveTeam().size(); ++i) {
-		if (manager.UnactiveTeam().at(i).SimboloMonigote == SimboloMonigote)
-			manager.UnactiveTeam().at(i).turnsPlayed = std::numeric_limits<int>::max()/2;
-	}
+	for (int i = 0; i < manager.UnactiveTeam().size(); ++i) { //hacemos que el etio en cuestión sea parte del escenario para que así el jugador no lo vea
+		if (manager.UnactiveTeam().at(i).SimboloMonigote == SimboloMonigote) //y los otros entios lo puedan atravesar.
+			manager.UnactiveTeam().at(i).turnsPlayed = std::numeric_limits<int>::max()/2; //y seteamos el factor que prevalece entre turnos, de los dos
+	}//que determinan la fatiga a la mitad del valor máximo de un int (Si lo poniamos al máximo la variable hacia overflow y adquiria un valor negativo considerable
 	
 }
 
-void GameManager::ComandoPJ(enti::InputKey pulsado) {
-		switch (pulsado) {
-		case CAMBIAR: CambiarEntio();
-			break;
-		case ARRIBAM:
-		case ARRIBA: submitMove(direction::_Up);
-			break;
-		case ABAJOM:
-		case ABAJO: submitMove(direction::_Down);
-			break;
-		case DERECHAM:
-		case DERECHA: submitMove(direction::_Right);
-			break;
-		case IZQUIERDAM:
-		case IZQUIERDA: submitMove(direction::_Left);
-			break;
-		case REHACER: if(actions!=0) Undo(); 
-			break;
-		case SALIR:
-			break;
-		case ATACAR: if (actions>0) estado = ATQStatus::_CHOOSE;
-			break;
-		}
+void MonigotesJuego::operator =(MonigotesJuego &a) {
+	CoordenadasX = a.CoordenadasX;
+	CoordenadasY = a.CoordenadasY;
+	vida = a.vida;
+	flechas = a.flechas;
+	SimboloMonigote = a.SimboloMonigote;
+	esControlado = a.esControlado;
+	movesAct = a.movesAct;
+	turnsPlayed = a.turnsPlayed;
+	hasPlayed = a.hasPlayed;
+	lastChar = a.lastChar;
+	manager = a.manager;
 }
 
-MonigotesJuego& GameManager::setAndFindStress() {
-	int ansposition = 0;
-	int minimalStress = ActiveTeam().at(0).turnsPlayed + ActiveTeam().at(0).movesAct;
+//Constructor de map
 
-	for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
-		if ((ActiveTeam().at(i).turnsPlayed + ActiveTeam().at(i).movesAct) < minimalStress) {
-			ansposition = i;
-			minimalStress = (ActiveTeam().at(i).turnsPlayed + ActiveTeam().at(i).movesAct);
-		}
-		if (ActiveTeam().at(i).esControlado)
-			ActiveTeam().at(i).esControlado = false;
-	}
-
-	ActiveTeam().at(ansposition).esControlado = true;
-	return ActiveTeam().at(ansposition);
-}
-
-void GameManager::CambiarEntio() {
-
-	if (actions > 0) {//si al equipo activo le quedan acciones, busca al entio menos fatigado y le da el control, a la vez que se lo quita al entio activo.
-		//es posible que el entio al que se le da el control sea el entio que estaba activo en un principio.
-		historial.push(std::pair<std::vector<MonigotesJuego>, std::vector<MonigotesJuego>>{Equipo1, Equipo2});
-		setAndFindStress();
-		actions--;
-	}
-	else {
-		for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
-			ActiveTeam().at(i).movesAct = 0;
-			if (ActiveTeam().at(i).hasPlayed) {
-				ActiveTeam().at(i).turnsPlayed++;
-				ActiveTeam().at(i).hasPlayed = false;
-			}
-
-		}
-			Equipo1SetState(Team2active);
-			setAndFindStress();
-			actions = 10;
-			while (historial.size() > 0)
-				historial.pop();
-	}
-}
-
-
-Map::Map(std::vector<MonigotesJuego> &Team1, std::vector<MonigotesJuego> &Team2) //no se si el recurso se tiene que leer como archivo asi que dejo esto asi por si al final se hace asi leerlo caracter a caracter
+Map::Map(std::vector<MonigotesJuego> &Team1, std::vector<MonigotesJuego> &Team2)
 {
 	std::ifstream mapOverlay("default.cfg");
 	char linia[SizeJ];
@@ -320,6 +183,73 @@ Map::Map(std::vector<MonigotesJuego> &Team1, std::vector<MonigotesJuego> &Team2)
 
 }
 
+//Métodos de GameManager
+
+void GameManager::ComandoPJ(enti::InputKey pulsado) {
+		switch (pulsado) {
+		case CAMBIAR: CambiarEntio();
+			break;
+		case ARRIBAM:
+		case ARRIBA: submitMove(direction::_Up);
+			break;
+		case ABAJOM:
+		case ABAJO: submitMove(direction::_Down);
+			break;
+		case DERECHAM:
+		case DERECHA: submitMove(direction::_Right);
+			break;
+		case IZQUIERDAM:
+		case IZQUIERDA: submitMove(direction::_Left);
+			break;
+		case REHACER: if(actions!=0) Undo(); 
+			break;
+		case SALIR: exit = true;
+			break;
+		case ATACAR: if (actions>0) estado = ATQStatus::_CHOOSE;
+			break;
+		}
+}
+
+void GameManager::setAndFindStress() { //esta función busca al entio menos fatigado y, a la vez que los pone a todos en estado inactivo, pone a 
+	int ansposition = 0;							// a este ene stado activo.
+	int minimalStress = ActiveTeam().at(0).turnsPlayed + ActiveTeam().at(0).movesAct;
+
+	for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
+		if ((ActiveTeam().at(i).turnsPlayed + ActiveTeam().at(i).movesAct) < minimalStress) {
+			ansposition = i;
+			minimalStress = (ActiveTeam().at(i).turnsPlayed + ActiveTeam().at(i).movesAct);
+		}
+		if (ActiveTeam().at(i).esControlado)
+			ActiveTeam().at(i).esControlado = false;
+	}
+
+	ActiveTeam().at(ansposition).esControlado = true;
+}
+
+void GameManager::CambiarEntio() {
+
+	if (actions > 0) {//si al equipo activo le quedan acciones, busca al entio menos fatigado y le da el control, a la vez que se lo quita al entio activo.
+		//es posible que el entio al que se le da el control sea el entio que estaba activo en un principio.
+		historial.push(std::pair<std::vector<MonigotesJuego>, std::vector<MonigotesJuego>>{Equipo1, Equipo2});
+		setAndFindStress();
+		actions--;
+	}
+	else {
+		for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
+			ActiveTeam().at(i).movesAct = 0;
+			if (ActiveTeam().at(i).hasPlayed) {
+				ActiveTeam().at(i).turnsPlayed++;
+				ActiveTeam().at(i).hasPlayed = false;
+			}
+
+		}
+			Equipo1SetState(Team2active);
+			setAndFindStress();
+			actions = 10;
+			while (historial.size() > 0)
+				historial.pop();
+	}
+}
 
 std::vector<MonigotesJuego>& GameManager::ActiveTeam() {
 	if (Team1active)
@@ -455,6 +385,97 @@ void GameManager::Undo() {
 	}
 }
 
+void GameManager::Ataque()
+{
+	switch (estado) {
+	case ATQStatus::_NULL:
+		break;
+	case ATQStatus::_CHOOSE:
+		enti::cout << enti::Color::WHITE << "Enter the weapon you want to choose:" << enti::endl;
+		enti::cout << enti::Color::YELLOW << "1 - SWORD" << enti::endl;
+		enti::cout << enti::Color::YELLOW << "2 - BOW" << enti::endl;
+		break;
+	case ATQStatus::_ACT:
+		enti::cout << enti::Color::WHITE << "Enter the direction to attack:" << enti::endl;
+		enti::cout << enti::Color::YELLOW << "1 - UP" << enti::endl;
+		enti::cout << enti::Color::YELLOW << "2 - LEFT" << enti::endl;
+		enti::cout << enti::Color::YELLOW << "3 - DOWN" << enti::endl;
+		enti::cout << enti::Color::YELLOW << "4 - RIGHT" << enti::endl;
+		break;
+	case ATQStatus::_REPORT:
+		historial.push(std::pair<std::vector<MonigotesJuego>, std::vector<MonigotesJuego>>{Equipo1, Equipo2});
+		std::pair<int, int> localDir;//el primero son las Y y el segundo las X
+		switch (ATQKey) {
+		case enti::InputKey::NUM1: //up	
+			localDir.first = -1;
+			localDir.second = 0;
+			break;
+		case enti::InputKey::NUM2: //left
+			localDir.first = 0;
+			localDir.second = -1;
+			break;
+		case enti::InputKey::NUM3: //down
+			localDir.first = 1;
+			localDir.second = 0;
+			break;
+		case enti::InputKey::NUM4: //right
+			localDir.first = 0;
+			localDir.second = 1;
+			break;
+		}
+
+		int localMinRange;
+		int localMaxRange;
+		bool localCheck = false;
+		int localPos;
+		int localDmg;
+		actions--;
+		if (WeaponSel == enti::InputKey::NUM1) {
+			localMinRange = 1;
+			localMaxRange = 2;
+		}
+		else {
+			localMinRange = 3;
+			localMaxRange = 11;
+			nowMoves().flechas--;
+		}
+
+
+		for (int i = localMinRange; i < localMaxRange; ++i) {
+			if (layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX() + i*(localDir.second)] != 'X' &&
+				layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX() + i*(localDir.second)] != '.' &&
+				layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX() + i*(localDir.second)] != 'O' &&
+				layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX() + i*(localDir.second)] != ':') {
+				for (int j = 0; j < ActiveTeam().size(); ++j) {
+					if (UnactiveTeam().at(j).SimboloMonigote == layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX() + i*(localDir.second)]) {
+						localDmg = 11 - i;
+						UnactiveTeam().at(j).harm(localDmg);
+						localCheck = true;
+						localPos = j;
+						break;
+					}
+				}
+			}
+			else if (layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX() + i*(localDir.second)] == 'X')
+				break;
+		}
+		if (localCheck) {
+			enti::cout << enti::endl << enti::Color::WHITE << "You inflicted " << localDmg << " to entio " << localPos << enti::endl;
+			if (UnactiveTeam().at(localPos).getHP()>0)
+				enti::cout << enti::Color::LIGHTMAGENTA << "Entio " << localPos << " life " << UnactiveTeam().at(localPos).getHP() << enti::endl;
+			else {
+				enti::cout << enti::Color::LIGHTMAGENTA << "Entio killed! " << enti::endl;
+				UnactiveTeam().at(localPos).goToSleep();
+			}
+		}
+		else {
+			enti::cout << enti::endl << enti::Color::WHITE << "You missed!" << enti::endl;
+		}
+		break;
+	}
+
+}
+
 GameManager::GameManager(){
 	for (int i = 0; i < 6; ++i) {
 		Equipo1.push_back(MonigotesJuego(*this));
@@ -469,24 +490,44 @@ GameManager::GameManager(){
 	Team2active = false;
 	actions = 10;
 	estado = ATQStatus::_NULL;
+	exit = false;
 }
 
-void Play() {
-	bool byPass = false;
+bool Play() { //recopilamos toda la aplicación en la función Play.
+	bool byPass = false; //el booleano byPass lo usamos para dar un "falso positivo" en de Input de teclado cuando nos es conveniente
 	bool GAMEOVER = true;
 	GameManager* boss = new GameManager();
 	int x = 0;
 
-	for (int i = 0; i < SizeI; ++i) {
-		for (int j = 0; j < SizeJ; ++j) {
+	enti::cout << enti::Color::YELLOW << "CLASH OF ENTIOS" << enti::endl;
+	enti::cout << enti::endl << enti::Color::WHITE << "-Each player has 6 Entios" << enti::endl;
+	enti::cout << "- Use WASD to move an entio." << enti::endl;
+	enti::cout << "- Use Z to undo a movement." << enti::endl;
+	enti::cout << "- Each entio has 2 weapones: 1 sword and  1 bow." << enti::endl;
+	enti::cout << "- Press SPACEBAR to use a weapon." << enti::endl;
+	enti::cout << "- The sword can instatly kill an enemy if it is placed in a cell next door." << enti::endl;
+	enti::cout << "- The bow can damage an enemy within a maximum distance of 10 cells." << enti::endl;	
+	enti::cout << "- Each character has only 10 arrows." << enti::endl;
+	enti::cout << "- Each turn the less fatigated entio will play first." << enti::endl;
+	enti::cout << "- To play with the next entio press ENTER." << enti::endl;
+	enti::cout << "- Each player can do 10 of these actions per turn." << enti::endl;
+	enti::cout << enti::endl << enti::Color::LIGHTMAGENTA << "Press any key to begin the game!" << enti::endl;
+	enti::cout << enti::cend;
 
-			std::cout << boss->layOut[i][j]; //Primer [] corresponde a las Y, el segundo [] a las X.
+
+	//en lugar del enti::SystemPause usamos bucles do while que comprueban todo el rato la tecla pulsada porque sino perdemos el Input de teclado
+	//del usuario
+	do {
+		if (enti::getInputKey() != enti::InputKey::NONE) {
+			byPass = true;
+			break;
 		}
-		std::cout << std::endl;
-	}
+	} while (true);
 
 	do {
 		enti::InputKey localChar = enti::getInputKey();
+		if (boss->exit)
+			break;
 		if (localChar != enti::InputKey::NONE || byPass) {
 			GAMEOVER = true;
 			byPass = false;
@@ -520,14 +561,15 @@ void Play() {
 					else if (localChar2 == enti::InputKey::NONE);
 					else {
 						boss->estado = ATQStatus::_NULL;
+						byPass = true;
 						break;
 					}
 				} while (true);
 			}
 		}
-		else; //El enti::systemPause se come el inputKey que me interesa. Hacer esto es lo mismo pero sin que se coma el input.
+		else; 
 	} while (true);
-	if (GAMEOVER) {
+	if (GAMEOVER && !exit) {
 		boss->GameStatus();
 		int localWinner;
 		if (boss->Team1active) {
@@ -540,23 +582,27 @@ void Play() {
 		delete boss;
 		boss = nullptr;
 	}
+	return exit;
 }
 
 
 void main()
 {
+	bool check;
 	replay:
-	Play();
-	do {
-		enti::InputKey a = enti::getInputKey();
-		if (a == enti::InputKey::Y || a == enti::InputKey::y) {
-			system("cls");
-			goto replay;
-		}
-		else if (a == enti::InputKey::N || a == enti::InputKey::n) {
+	check=Play();
+	if (!check) {
+		do {
+			enti::InputKey a = enti::getInputKey();
+			if (a == enti::InputKey::Y || a == enti::InputKey::y) {
+				system("cls");
+				goto replay;
+			}
+			else if (a == enti::InputKey::N || a == enti::InputKey::n) {
 
-			break;
-		}
-		else;
-	} while (true);
+				break;
+			}
+			else;
+		} while (true);
+	}
 }
