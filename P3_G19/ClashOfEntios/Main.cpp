@@ -360,6 +360,7 @@ GameManager::GameManager() {
 		Team2active = false;
 		actions = 10;
 }
+/*
 
 void GameManager::Ataque()
 {
@@ -388,7 +389,7 @@ void GameManager::Ataque()
 
 }
 
-
+*/
 
 void Play() {
 
