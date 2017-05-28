@@ -237,6 +237,8 @@ void GameManager::CambiarEntio() {
 			else
 				ActiveTeam().at(i).turnsPlayed = 0;
 		}
+			std::queue <enti::InputKey> empty;
+			std::swap(comandos, empty);
 			Equipo1SetState(Team2active);
 			setAndFindStress();
 			actions = 10;
@@ -413,7 +415,7 @@ void GameManager::GameStatus() {
 	}
 }
 
-GameManager::GameManager() {
+GameManager::GameManager(std::queue<enti::InputKey> Input) : comandos(Input){
 	for (int i = 0; i < 6; ++i) {
 		Equipo1.push_back(MonigotesJuego(*this));
 	}
@@ -460,7 +462,7 @@ Equipo2.at(x).vida-=
 
 void Play() {
 	std::queue <enti::InputKey> comandos;
-	GameManager* boss = new GameManager();
+	GameManager* boss = new GameManager(comandos);
 	int x = 0;
 
 	for (int i = 0; i < SizeI; ++i) {
