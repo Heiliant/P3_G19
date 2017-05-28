@@ -67,6 +67,20 @@ public:
 	int getHP();
 	void harm(int a);
 	void goToSleep();
+
+	void operator =(MonigotesJuego &a) {
+		CoordenadasX = a.CoordenadasX;
+		CoordenadasY = a.CoordenadasY;
+		vida = a.vida;
+		flechas = a.flechas;
+		SimboloMonigote = a.SimboloMonigote;
+		esControlado = a.esControlado;
+		movesAct = a.movesAct;
+		turnsPlayed = a.turnsPlayed;
+		hasPlayed = a.hasPlayed;
+		lastChar = a.lastChar;
+		manager = a.manager;
+	}
 };
 
 bool operator ==(MonigotesJuego &a, MonigotesJuego &b) {

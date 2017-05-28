@@ -202,6 +202,7 @@ void MonigotesJuego::goToSleep() {
 }
 
 void GameManager::ComandoPJ(enti::InputKey pulsado) {
+	bool localCheck=false;
 		switch (pulsado) {
 		case CAMBIAR: CambiarEntio();
 			break;
@@ -217,14 +218,15 @@ void GameManager::ComandoPJ(enti::InputKey pulsado) {
 		case IZQUIERDAM:
 		case IZQUIERDA: submitMove(direction::_Left);
 			break;
-		case REHACER: Undo();
+		case REHACER: Undo(); localCheck = true;
 			break;
 		case ATRAS:
 			break;
 		case ATACAR: if (actions>0) estado = ATQStatus::_CHOOSE;
 			break;
 		}
-		historial.push(std::pair<std::vector<MonigotesJuego>, std::vector<MonigotesJuego>>{Equipo1, Equipo2});
+		if(!localCheck)
+			historial.push(std::pair<std::vector<MonigotesJuego>, std::vector<MonigotesJuego>>{Equipo1, Equipo2});
 }
 
 MonigotesJuego& GameManager::setAndFindStress() {
@@ -263,7 +265,8 @@ void GameManager::CambiarEntio() {
 			Equipo1SetState(Team2active);
 			setAndFindStress();
 			actions = 10;
-			
+			while (historial.size() > 0)
+				historial.pop();
 	}
 }
 
@@ -403,7 +406,6 @@ void GameManager::submitMove(direction vector) {
 			}
 		}		
 	}
-	//enti::cout << enti::cend;
 }
 
 void GameManager::GameStatus() {
@@ -442,9 +444,17 @@ void GameManager::GameStatus() {
 
 void GameManager::Undo() {
 	if (historial.size()>0) {
+		for (int i = 0; i < ActiveTeam().size(); ++i) {
+			layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
+		}
 		Equipo1 = historial.top().first;
 		Equipo2 = historial.top().second;
+		if (actions != 0 && actions!=10)
+			actions++;
 		historial.pop();
+	}
+	for (int i = 0; i < ActiveTeam().size(); ++i) {
+		layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).SimboloMonigote;
 	}
 }
 
@@ -485,7 +495,7 @@ void Play() {
 			byPass = false;
 			for (int i = 0; i < boss->UnactiveTeam().size(); ++i) {
 				if (boss->UnactiveTeam().at(i).getHP() > 0)
-					GAMEOVER = true;
+					GAMEOVER = false;
 			}
 			boss->ComandoPJ(localChar);
 			boss->GameStatus();
