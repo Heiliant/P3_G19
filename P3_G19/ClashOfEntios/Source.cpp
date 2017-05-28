@@ -178,8 +178,6 @@ int MonigotesJuego::getY() {
 }
 
 void GameManager::ComandoPJ(enti::InputKey pulsado) {
-
-	if (!ActiveTeamIsDone()) { //si el equipo que est? jugando a?n tiene acciones
 		switch (pulsado) {
 		case CAMBIAR: CambiarEntio();
 			break;
@@ -202,10 +200,6 @@ void GameManager::ComandoPJ(enti::InputKey pulsado) {
 		case ATACAR:
 			break;
 		}
-	}
-	else {
-
-	}
 }
 
 void GameManager::CambiarEntio() //recorre el team activo. Setea el esControlado 
@@ -316,44 +310,53 @@ void GameManager::Equipo2SetState(bool a) {
 }
 
 void GameManager::submitMove(direction vector) {
-	for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
-		if (ActiveTeam().at(i).esControlado) {
-			switch (vector) {
-			case direction::_Down:
-				if (layOut[ActiveTeam().at(i).getY() + 1][ActiveTeam().at(i).getX()] == '.' || layOut[ActiveTeam().at(i).getY() + 1][ActiveTeam().at(i).getX()] == ':') {
-					layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
-					ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY() + 1][ActiveTeam().at(i).getX()];
-					ActiveTeam().at(i).minusY();
+	if (!ActiveTeamIsDone()) {
+		for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
+			if (ActiveTeam().at(i).esControlado) {
+				switch (vector) {
+				case direction::_Down:
+					if (layOut[ActiveTeam().at(i).getY() + 1][ActiveTeam().at(i).getX()] == '.' || layOut[ActiveTeam().at(i).getY() + 1][ActiveTeam().at(i).getX()] == ':') {
+						layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
+						ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY() + 1][ActiveTeam().at(i).getX()];
+						ActiveTeam().at(i).minusY();
+						actions--;
+					}
+					break;
+				case direction::_Left:
+					if (layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX() - 1] == '.' || layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX() - 1] == ':') {
+						layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
+						ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX() - 1];
+						ActiveTeam().at(i).minusX();
+						actions--;
+					}
+					break;
+				case direction::_Right:
+					if (layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX() + 1] == '.' || layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX() + 1] == ':') {
+						layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
+						ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX() + 1];
+						ActiveTeam().at(i).plusX();
+						actions--;
+					}
+					break;
+				case direction::_Up:
+					if (layOut[ActiveTeam().at(i).getY() - 1][ActiveTeam().at(i).getX()] == '.' || layOut[ActiveTeam().at(i).getY() - 1][ActiveTeam().at(i).getX()] == ':') {
+						layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
+						ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY() - 1][ActiveTeam().at(i).getX()];
+						ActiveTeam().at(i).plusY();
+						actions--;
+					}
+					break;
 				}
-				break;
-			case direction::_Left:
-				if (layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX() - 1] == '.' || layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX() - 1] == ':') {
-					layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
-					ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX() - 1];
-					ActiveTeam().at(i).minusX();
-				}
-				break;
-			case direction::_Right:
-				if (layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX() + 1] == '.' || layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX() + 1] == ':') {
-					layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
-					ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX() + 1];
-					ActiveTeam().at(i).plusX();
-				}
-				break;
-			case direction::_Up:
-				if (layOut[ActiveTeam().at(i).getY() - 1][ActiveTeam().at(i).getX()] == '.' || layOut[ActiveTeam().at(i).getY() - 1][ActiveTeam().at(i).getX()] == ':') {
-					layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
-					ActiveTeam().at(i).lastChar = layOut[ActiveTeam().at(i).getY() - 1][ActiveTeam().at(i).getX()];
-					ActiveTeam().at(i).plusY();
-				}
+				layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).SimboloMonigote;
 				break;
 			}
-			layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).SimboloMonigote;
-			break;
-		}
+		}		
 	}
-	system("cls");
+	//enti::cout << enti::cend;
+}
 
+void GameManager::GameStatus() {
+	system("cls");
 	for (int i = 0; i < SizeI; ++i) {
 		for (int j = 0; j < SizeJ; ++j) {
 			switch (layOut[i][j]) {
@@ -372,10 +375,7 @@ void GameManager::submitMove(direction vector) {
 		}
 		enti::cout << enti::endl;
 	}
-	//enti::cout << enti::cend;
-}
 
-void GameManager::GameStatus() {
 	enti::cout << enti::Color::YELLOW << "Remaining Movements: " << enti::Color::LIGHTCYAN << actions << enti::endl;
 	enti::cout << enti::Color::YELLOW << "Now moves: " << enti::Color::LIGHTCYAN << nowMoves() << enti ::cend;
 }
