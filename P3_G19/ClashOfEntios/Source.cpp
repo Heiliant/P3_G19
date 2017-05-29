@@ -106,7 +106,7 @@ void MonigotesJuego::goToSleep() { //este método lo hemos usado para "deshabilit
 									//ya que la implementación del destructor nos causaba ciertos problemas.
 	SimboloMonigote = lastChar;
 	manager.layOut[CoordenadasY][CoordenadasX] = lastChar;
-	for (int i = 0; i < manager.UnactiveTeam().size(); ++i) { //hacemos que el etio en cuestión sea parte del escenario para que así el jugador no lo vea
+	for (unsigned int i = 0; i < manager.UnactiveTeam().size(); ++i) { //hacemos que el etio en cuestión sea parte del escenario para que así el jugador no lo vea
 		if (manager.UnactiveTeam().at(i).SimboloMonigote == SimboloMonigote) //y los otros entios lo puedan atravesar.
 			manager.UnactiveTeam().at(i).turnsPlayed = std::numeric_limits<int>::max()/2; //y seteamos el factor que prevalece entre turnos, de los dos
 	}//que determinan la fatiga a la mitad del valor máximo de un int (Si lo poniamos al máximo la variable hacia overflow y adquiria un valor negativo considerable
@@ -371,7 +371,7 @@ void GameManager::GameStatus() {
 void GameManager::Undo() {
 
 	if (historial.size()>0) {
-		for (int i = 0; i < ActiveTeam().size(); ++i) {
+		for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
 			layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).lastChar;
 		}
 		Equipo1 = historial.top().first;
@@ -380,7 +380,7 @@ void GameManager::Undo() {
 			actions++;
 		historial.pop();
 	}
-	for (int i = 0; i < ActiveTeam().size(); ++i) {
+	for (unsigned int i = 0; i < ActiveTeam().size(); ++i) {
 		layOut[ActiveTeam().at(i).getY()][ActiveTeam().at(i).getX()] = ActiveTeam().at(i).SimboloMonigote;
 	}
 }
@@ -446,7 +446,7 @@ void GameManager::Ataque()
 				layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX() + i*(localDir.second)] != '.' &&
 				layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX() + i*(localDir.second)] != 'O' &&
 				layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX() + i*(localDir.second)] != ':') {
-				for (int j = 0; j < ActiveTeam().size(); ++j) {
+				for (unsigned int j = 0; j < ActiveTeam().size(); ++j) {
 					if (UnactiveTeam().at(j).SimboloMonigote == layOut[nowMoves().getY() + i*(localDir.first)][nowMoves().getX() + i*(localDir.second)]) {
 						localDmg = 11 - i;
 						UnactiveTeam().at(j).harm(localDmg);
@@ -531,7 +531,7 @@ bool Play() { //recopilamos toda la aplicación en la función Play.
 		if (localChar != enti::InputKey::NONE || byPass) {
 			GAMEOVER = true;
 			byPass = false;
-			for (int i = 0; i < boss->UnactiveTeam().size(); ++i) {
+			for (unsigned int i = 0; i < boss->UnactiveTeam().size(); ++i) {
 				if (boss->UnactiveTeam().at(i).getHP() > 0)
 					GAMEOVER = false;
 			}
@@ -569,7 +569,8 @@ bool Play() { //recopilamos toda la aplicación en la función Play.
 		}
 		else; 
 	} while (true);
-	if (GAMEOVER && !exit) {
+
+	if (GAMEOVER && !boss->exit) {
 		boss->GameStatus();
 		int localWinner;
 		if (boss->Team1active) {
@@ -582,7 +583,7 @@ bool Play() { //recopilamos toda la aplicación en la función Play.
 		delete boss;
 		boss = nullptr;
 	}
-	return exit;
+	return boss->exit;
 }
 
 
